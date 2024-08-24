@@ -8,8 +8,8 @@ export type CrudList<
 > = {
   create: (item: ItemCreateData) => Promise<Item>;
   createMutation: UseMutationResult<Item, Error, ItemCreateData, unknown>;
-  delete: (id: Id) => Promise<void>;
-  deleteMutation: UseMutationResult<void, Error, Id, unknown>;
+  delete: (id: Id) => Promise<Id>;
+  deleteMutation: UseMutationResult<Id, Error, Id, unknown>;
   list: Item[];
   listQuery: UseQueryResult<Item[]>;
   update: (id: Id, data: ItemUpdateData) => Promise<Item>;
@@ -29,7 +29,8 @@ export interface CrudListOptions<
 > {
   create: (item: ItemCreateData) => Promise<Item>;
   delete: (id: Id) => Promise<void>;
-  key: any;
   list: () => Promise<Item[]>;
+  listKey: any;
+  listOrder?: (items: Item[]) => Item[];
   update: (id: Id, data: ItemUpdateData) => Promise<Item>;
 }
