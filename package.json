@@ -1,6 +1,8 @@
 {
+  "name": "react-query-crud",
   "version": "0.1.0",
   "license": "MIT",
+  "author": "Sergey Shpadyrev",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -33,8 +35,6 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "react-query-lists",
-  "author": "Sergey Shpadyrev",
   "module": "dist/react-query-lists.esm.js",
   "size-limit": [
     {

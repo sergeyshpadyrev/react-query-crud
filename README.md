@@ -1,11 +1,11 @@
-# React query lists
+# React query CRUD
 
-CRUD and infinite lists built on top of React Query
+CRUD lists built on top of React Query
 
 ## Installation
 
 ```
-npm install --save react-query-lists
+npm install --save react-query-crud
 // or
-yarn add react-query-lists
+yarn add react-query-crud
 ```
