@@ -10,9 +10,10 @@ It creates a list of items fetched from API and automatically manages query cach
 
 ## Installation
 
-```
+```sh
+# npm
 npm install --save react-query-crud
-// or
+# yarn
 yarn add react-query-crud
 ```
 
