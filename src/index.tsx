@@ -28,8 +28,8 @@ export const useCrudList = <
   const deleteMutation = useMutation({
     mutationFn: async (id: Id) => options.delete(id),
     onError: (
-      error: Error,
-      id: Id,
+      _error: Error,
+      _id: Id,
       context: { previousItems: Item[] | undefined } | undefined
     ) => {
       if (!context?.previousItems) return;
