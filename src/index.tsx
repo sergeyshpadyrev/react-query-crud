@@ -26,14 +26,23 @@ export const useCrudList = <
   );
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: Id) => {
-      await options.delete(id);
-      return id;
+    mutationFn: async (id: Id) => options.delete(id),
+    onError: (
+      error: Error,
+      id: Id,
+      context: { previousItems: Item[] | undefined } | undefined
+    ) => {
+      if (!context?.previousItems) return;
+      queryClient.setQueryData(options.listKey, context.previousItems);
     },
-    onSuccess: (id: Id) => {
+    onMutate: (id: Id) => {
+      const previousItems = queryClient.getQueryData(options.listKey) as
+        | Item[]
+        | undefined;
       queryClient.setQueryData(options.listKey, (items: Item[] | undefined) =>
         items?.filter(item => item.id !== id)
       );
+      return { previousItems };
     },
   });
   const deleteFuntion = useCallback(
