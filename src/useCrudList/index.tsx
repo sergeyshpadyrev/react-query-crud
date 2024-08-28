@@ -3,7 +3,11 @@ import { CrudList, CrudListMethodOptions, CrudListOptions } from './types';
 import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const withAdditionalMethod = <CrudListType, Id, Item extends { id: Id }>(
+const withAdditionalMethod = <
+  CrudListType extends CrudList<Id, Item>,
+  Id,
+  Item extends { id: Id }
+>(
   controller: CrudListType,
   key: ReadonlyArray<any>
 ) => <Name extends string, Result, Argument>(

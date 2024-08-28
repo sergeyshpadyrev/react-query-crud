@@ -13,7 +13,7 @@ import {
 } from '@tanstack/react-query';
 
 const withAdditionalMethod = <
-  CrudListType,
+  CrudListType extends CrudInfiniteList<Id, Item, Page, PageParam>,
   Id,
   Item extends { id: Id },
   Page extends { items: Item[] },
@@ -30,16 +30,25 @@ const withAdditionalMethod = <
     onSuccess: (data, variables) =>
       queryClient.setQueryData(
         key,
-        ({
-          pageParams,
-          pages,
-        }: {
-          pageParams: PageParam[];
-          pages: Page[] | undefined;
-        }) => ({
-          pageParams: [pageParams[0], ...pageParams],
-          pages: props.update(pages ?? [], data, variables),
-        })
+        ({ pages }: { pageParams: PageParam[]; pages: Page[] | undefined }) => {
+          const newPages = props.update(pages ?? [], data, variables);
+          return {
+            pageParams: newPages.reduce(
+              acc => ({
+                params: [
+                  controller.options.listPageParam(acc.restPages),
+                  ...acc.params,
+                ],
+                restPages: acc.restPages.slice(0, acc.restPages.length - 1),
+              }),
+              { params: [], restPages: [] } as {
+                params: PageParam[];
+                restPages: Page[];
+              }
+            ).params,
+            pages: newPages,
+          };
+        }
       ),
   });
   const mutationFunction = useCallback(

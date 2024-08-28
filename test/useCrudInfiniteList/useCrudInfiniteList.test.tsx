@@ -48,15 +48,16 @@ describe('useCrudInfiniteList', () => {
     expect(hook.result.current.list).toEqual(defaultItems.slice(1, limit));
   });
 
-  // it('should change items on update', async () => {
-  //   const hook = renderHook(() => useItems(5), { wrapper });
-  //   await hook.waitFor(() => hook.result.current.listQuery.isSuccess);
+  it('should change items on update', async () => {
+    const hook = renderHook(() => useItems('onUpdate', limit), { wrapper });
+    await hook.waitFor(() => hook.result.current.listQuery.isSuccess);
 
-  //   await hook.result.current.update({ id: 2, data: { name: 'Charlie' } });
-  //   await hook.waitFor(() => hook.result.current.updateMutation.isSuccess);
-  //   expect(hook.result.current.list).toEqual([
-  //     defaultItems[0],
-  //     { id: 2, name: 'Charlie' },
-  //   ]);
-  // });
+    await hook.result.current.update({ id: 1, data: { name: 'Charlie' } });
+    await hook.waitFor(() => hook.result.current.updateMutation.isSuccess);
+
+    expect(hook.result.current.list).toEqual([
+      { id: 1, name: 'Charlie' },
+      ...defaultItems.slice(1, 5),
+    ]);
+  });
 });

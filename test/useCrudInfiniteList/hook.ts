@@ -14,5 +14,6 @@ export const useItems = (testId: string, limit: number = 5) => {
       pages.reduce((acc, page) => acc + page.items.length, 0),
   })
     .addMethod(CrudInfiniteListMethods.create(api.create))
-    .addMethod(CrudInfiniteListMethods.delete(api.delete));
+    .addMethod(CrudInfiniteListMethods.delete(api.delete))
+    .addMethod(CrudInfiniteListMethods.update(api.update));
 };
