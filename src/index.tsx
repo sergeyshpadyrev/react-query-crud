@@ -1,6 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CrudList, CrudListOptions } from './types';
+import { CustomMutationFields } from './types.unformatted';
 import { useCallback, useMemo } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const withCustomMutation = <CrudListType, Item>(
   controller: CrudListType,
@@ -9,8 +10,7 @@ const withCustomMutation = <CrudListType, Item>(
   name: Name;
   run: (variables: Argument) => Promise<Result>;
   update: (items: Item[], result: Result, variables: Argument) => Item[];
-}): CrudListType &
-  { [name in Name]: (argument: Argument) => Promise<Result> } => {
+}): CrudListType & CustomMutationFields<Argument, Name, Result> => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: props.run,
@@ -27,16 +27,16 @@ const withCustomMutation = <CrudListType, Item>(
 
   const extendedController = {
     ...controller,
-    ...({ [props.name]: mutationFunction } as {
-      [name in Name]: (argument: Argument) => Promise<Result>;
-    }),
+    ...({
+      [props.name]: mutationFunction,
+      [props.name + 'Mutation']: mutation,
+    } as CustomMutationFields<Argument, Name, Result>),
   };
 
   return {
     ...extendedController,
     withCustomMutation: withCustomMutation<
-      CrudListType &
-        { [name in Name]: (argument: Argument) => Promise<Result> },
+      CrudListType & CustomMutationFields<Argument, Name, Result>,
       Item
     >(extendedController, key),
   };
