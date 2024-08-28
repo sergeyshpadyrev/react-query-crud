@@ -32,9 +32,10 @@ export interface CrudInfiniteListMethodOptions<
   Id,
   Item extends { id: Id },
   Name extends string,
+  Page extends { items: Item[] },
   Result
 > {
   name: AllowedMethodName<Name>;
   run: (variables: Argument) => Promise<Result>;
-  update: (items: Item[], result: Result, variables: Argument) => Item[];
+  update: (pages: Page[], result: Result, variables: Argument) => Page[];
 }

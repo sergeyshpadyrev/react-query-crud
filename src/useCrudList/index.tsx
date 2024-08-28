@@ -1,24 +1,21 @@
-import { AdditionalMethodFields, AllowedMethodName } from './types.unformatted';
-import { CrudList, CrudListOptions } from './types';
+import { AdditionalMethodFields } from './types.unformatted';
+import { CrudList, CrudListMethodOptions, CrudListOptions } from './types';
 import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const withAdditionalMethod = <CrudListType, Item>(
+const withAdditionalMethod = <CrudListType, Id, Item extends { id: Id }>(
   controller: CrudListType,
   key: ReadonlyArray<any>
-) => <Name extends string, Result, Argument>(props: {
-  name: AllowedMethodName<Name>;
-  run: (variables: Argument) => Promise<Result>;
-  update: (items: Item[], result: Result, variables: Argument) => Item[];
-}) => {
+) => <Name extends string, Result, Argument>(
+  props: CrudListMethodOptions<Argument, Id, Item, Name, Result>
+) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: props.run,
-    onSuccess: (data, variables) => {
+    onSuccess: (data, variables) =>
       queryClient.setQueryData(key, (items: Item[] | undefined) =>
         props.update(items ?? [], data, variables)
-      );
-    },
+      ),
   });
   const mutationFunction = useCallback(
     (argument: Argument) => mutation.mutateAsync(argument),
@@ -37,6 +34,7 @@ const withAdditionalMethod = <CrudListType, Item>(
     ...extendedController,
     addMethod: withAdditionalMethod<
       CrudListType & AdditionalMethodFields<Argument, Name, Result>,
+      Id,
       Item
     >(extendedController, key),
   };
@@ -64,7 +62,7 @@ export const useCrudList = <Id, Item extends { id: Id }>(
 
   return {
     ...controller,
-    addMethod: withAdditionalMethod<CrudList<Id, Item>, Item>(
+    addMethod: withAdditionalMethod<CrudList<Id, Item>, Id, Item>(
       controller,
       options.key
     ),
@@ -72,4 +70,3 @@ export const useCrudList = <Id, Item extends { id: Id }>(
 };
 
 export * from './methods';
-export * from './types';

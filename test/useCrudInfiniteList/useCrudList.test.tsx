@@ -22,17 +22,17 @@ describe('useCrudInfiniteList', () => {
     expect(hook.result.current.list).toEqual(defaultItems.slice(0, 5));
   });
 
-  // it('should add items on create', async () => {
-  //   const hook = renderHook(useItems, { wrapper });
-  //   await waitFor(() => hook.result.current.listQuery.isSuccess);
+  it('should add items on create', async () => {
+    const hook = renderHook(useItems, { wrapper });
+    await waitFor(() => hook.result.current.listQuery.isSuccess);
 
-  //   await hook.result.current.create({ name: 'Charlie' });
-  //   await waitFor(() => hook.result.current.createMutation.isSuccess);
-  //   expect(hook.result.current.list).toEqual([
-  //     ...defaultItems,
-  //     { id: 3, name: 'Charlie' },
-  //   ]);
-  // });
+    await hook.result.current.create({ name: 'Charlie' });
+    await waitFor(() => hook.result.current.createMutation.isSuccess);
+    expect(hook.result.current.list).toEqual([
+      { id: 11, name: 'Charlie' },
+      ...defaultItems.slice(0, 5),
+    ]);
+  });
 
   // it('should remove items on delete', async () => {
   //   const hook = renderHook(useItems, { wrapper });

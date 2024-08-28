@@ -1,6 +1,71 @@
-import { useMemo } from 'react';
-import { CrudInfiniteList, CrudInfiniteListOptions } from './types';
-import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { AdditionalMethodFields } from './types.unformatted';
+import { useCallback, useMemo } from 'react';
+import {
+  CrudInfiniteList,
+  CrudInfiniteListMethodOptions,
+  CrudInfiniteListOptions,
+} from './types';
+import {
+  InfiniteData,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
+
+const withAdditionalMethod = <
+  CrudListType,
+  Id,
+  Item extends { id: Id },
+  Page extends { items: Item[] },
+  PageParam
+>(
+  controller: CrudListType,
+  key: ReadonlyArray<any>
+) => <Name extends string, Result, Argument>(
+  props: CrudInfiniteListMethodOptions<Argument, Id, Item, Name, Page, Result>
+) => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: props.run,
+    onSuccess: (data, variables) =>
+      queryClient.setQueryData(
+        key,
+        ({
+          pageParams,
+          pages,
+        }: {
+          pageParams: PageParam[];
+          pages: Page[] | undefined;
+        }) => ({
+          pageParams: [pageParams[0], ...pageParams],
+          pages: props.update(pages ?? [], data, variables),
+        })
+      ),
+  });
+  const mutationFunction = useCallback(
+    (argument: Argument) => mutation.mutateAsync(argument),
+    [mutation.mutateAsync]
+  );
+
+  const extendedController = {
+    ...controller,
+    ...({
+      [props.name]: mutationFunction,
+      [props.name + 'Mutation']: mutation,
+    } as AdditionalMethodFields<Argument, Name, Result>),
+  };
+
+  return {
+    ...extendedController,
+    addMethod: withAdditionalMethod<
+      CrudListType & AdditionalMethodFields<Argument, Name, Result>,
+      Id,
+      Item,
+      Page,
+      PageParam
+    >(extendedController, key),
+  };
+};
 
 export const useCrudInfiniteList = <
   Id,
@@ -15,8 +80,8 @@ export const useCrudInfiniteList = <
     Error,
     InfiniteData<Page, PageParam>
   >({
-    getNextPageParam: (_lastPage: Page, pages: Page[]) =>
-      options.listPageParam(pages),
+    getNextPageParam: (_lastPage: Page, pages: Page[] | undefined) =>
+      options.listPageParam(pages ?? []),
     initialPageParam: options.listPageParam([]),
     queryKey: options.key,
     queryFn: ({ pageParam }) => options.list(pageParam as PageParam),
@@ -40,7 +105,16 @@ export const useCrudInfiniteList = <
     options,
   };
 
-  return controller;
+  return {
+    ...controller,
+    addMethod: withAdditionalMethod<
+      CrudInfiniteList<Id, Item, Page, PageParam>,
+      Id,
+      Item,
+      Page,
+      PageParam
+    >(controller, options.key),
+  };
 };
 
-export * from './types';
+export * from './methods';
