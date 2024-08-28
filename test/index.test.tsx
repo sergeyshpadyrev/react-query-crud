@@ -54,4 +54,16 @@ describe('useCrudList', () => {
       { id: 2, name: 'Charlie' },
     ]);
   });
+
+  it('should use custom hook', async () => {
+    const hook = renderHook(useItems, { wrapper });
+    await waitFor(() => hook.result.current.listQuery.isSuccess);
+
+    await hook.result.current.recreate(1);
+    await waitFor(() => hook.result.current.recreateMutation.isSuccess);
+    expect(hook.result.current.list).toEqual([
+      defaultItems[1],
+      { id: 3, name: 'Alice' },
+    ]);
+  });
 });

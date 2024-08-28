@@ -20,6 +20,13 @@ export const createMockAPI = () => {
         resolve();
       }),
     read: (): Promise<TestItem[]> => Promise.resolve(items),
+    recreate: (id: number): Promise<TestItem> =>
+      new Promise(resolve => {
+        const item = items.find(item => item.id === id);
+        const newItem = { ...item, id: items.length + 1 } as TestItem;
+        items = [...items.filter(item => item.id !== id), newItem];
+        resolve(newItem);
+      }),
     update: (id: number, updating: { name: string }): Promise<TestItem> =>
       new Promise(resolve => {
         items = items.map(item =>

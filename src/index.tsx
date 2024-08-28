@@ -2,6 +2,46 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CrudList, CrudListOptions } from './types';
 import { useCallback, useMemo } from 'react';
 
+const withCustomMutation = <CrudListType, Item>(
+  controller: CrudListType,
+  key: ReadonlyArray<any>
+) => <Argument, Name extends string, Result>(props: {
+  name: Name;
+  run: (variables: Argument) => Promise<Result>;
+  update: (items: Item[], result: Result, variables: Argument) => Item[];
+}): CrudListType &
+  { [name in Name]: (argument: Argument) => Promise<Result> } => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: props.run,
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(key, (items: Item[] | undefined) =>
+        props.update(items ?? [], data, variables)
+      );
+    },
+  });
+  const mutationFunction = useCallback(
+    (argument: Argument) => mutation.mutateAsync(argument),
+    [mutation.mutateAsync]
+  );
+
+  const extendedController = {
+    ...controller,
+    ...({ [props.name]: mutationFunction } as {
+      [name in Name]: (argument: Argument) => Promise<Result>;
+    }),
+  };
+
+  return {
+    ...extendedController,
+    withCustomMutation: withCustomMutation<
+      CrudListType &
+        { [name in Name]: (argument: Argument) => Promise<Result> },
+      Item
+    >(extendedController, key),
+  };
+};
+
 export const useCrudList = <
   Id,
   Item extends { id: Id },
@@ -9,7 +49,7 @@ export const useCrudList = <
   ItemUpdateData = Partial<Item>
 >(
   options: CrudListOptions<Id, Item, ItemCreateData, ItemUpdateData>
-): CrudList<Id, Item, ItemCreateData, ItemUpdateData> => {
+) => {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
@@ -75,7 +115,7 @@ export const useCrudList = <
     [updateMutation.mutateAsync]
   );
 
-  return {
+  const controller = {
     create,
     createMutation,
     delete: deleteFuntion,
@@ -85,5 +125,13 @@ export const useCrudList = <
     options,
     update,
     updateMutation,
+  };
+
+  return {
+    ...controller,
+    withCustomMutation: withCustomMutation<
+      CrudList<Id, Item, ItemCreateData, ItemUpdateData>,
+      Item
+    >(controller, options.key),
   };
 };
