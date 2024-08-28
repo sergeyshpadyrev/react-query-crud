@@ -3,7 +3,7 @@ import { CrudInfiniteList } from "./types";
 import { UseMutationResult } from "@tanstack/react-query";
 
 export type AllowedMethodName<T> = T extends BannedMethodNames ? never : T;
-type BannedMethodNames = keyof CrudInfiniteList<any, any>;
+type BannedMethodNames = keyof CrudInfiniteList<any, any, any, any>;
 
 type IfUnknown<T, TrueType, FalseType> = unknown extends T
   ? T extends unknown

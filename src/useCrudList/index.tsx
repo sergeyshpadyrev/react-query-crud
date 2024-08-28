@@ -56,7 +56,7 @@ export const useCrudList = <Id, Item extends { id: Id }>(
     return options.listOrder(listQuery.data);
   }, [listQuery.data]);
 
-  const controller = {
+  const controller: CrudList<Id, Item> = {
     list,
     listQuery,
     options,

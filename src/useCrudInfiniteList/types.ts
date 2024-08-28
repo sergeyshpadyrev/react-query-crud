@@ -1,5 +1,5 @@
 import { AllowedMethodName } from './types.unformatted';
-import { UseInfiniteQueryResult } from '@tanstack/react-query';
+import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 
 export interface CrudInfiniteList<
   Id,
@@ -10,7 +10,7 @@ export interface CrudInfiniteList<
   list: Item[];
   listFetchMore: () => void;
   listHasMore: boolean;
-  listQuery: UseInfiniteQueryResult<Item>;
+  listQuery: UseInfiniteQueryResult<InfiniteData<Page, PageParam>>;
   options: CrudInfiniteListOptions<Id, Item, Page, PageParam>;
 }
 
