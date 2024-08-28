@@ -1,6 +1,11 @@
 // This file can't be formatted with Prettier
 import { UseMutationResult } from "@tanstack/react-query";
-import { IfUnknown } from "./types";
+
+export type IfUnknown<T, TrueType, FalseType> = unknown extends T
+  ? T extends unknown
+    ? TrueType
+    : FalseType
+  : FalseType;
 
 export type CustomMutationFields<Argument, Name extends string, Result> = 
   { [name in Name]:
