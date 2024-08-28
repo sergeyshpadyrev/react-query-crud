@@ -8,6 +8,11 @@ export const defaultItems: TestItem[] = [
 export const createMockAPI = () => {
   let items: TestItem[] = [...defaultItems];
   return {
+    clear: (): Promise<void> =>
+      new Promise(resolve => {
+        items = [];
+        resolve();
+      }),
     create: (item: { name: string }): Promise<TestItem> =>
       new Promise(resolve => {
         const newItem = { id: items.length + 1, name: item.name };

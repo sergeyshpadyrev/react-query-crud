@@ -55,7 +55,7 @@ describe('useCrudList', () => {
     ]);
   });
 
-  it('should use custom hook', async () => {
+  it('should recreate item on custom hook', async () => {
     const hook = renderHook(useItems, { wrapper });
     await waitFor(() => hook.result.current.listQuery.isSuccess);
 
@@ -65,5 +65,14 @@ describe('useCrudList', () => {
       defaultItems[1],
       { id: 3, name: 'Alice' },
     ]);
+  });
+
+  it('should clear items on custom hook', async () => {
+    const hook = renderHook(useItems, { wrapper });
+    await waitFor(() => hook.result.current.listQuery.isSuccess);
+
+    await hook.result.current.clear();
+    await waitFor(() => hook.result.current.clearMutation.isSuccess);
+    expect(hook.result.current.list).toEqual([]);
   });
 });

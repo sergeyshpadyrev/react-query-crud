@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 export const useItems = () => {
   const api = useMemo(createMockAPI, []);
-  const apiHook = useCrudList({
+  return useCrudList({
     crud: {
       create: api.create,
       delete: api.delete,
@@ -12,16 +12,18 @@ export const useItems = () => {
       update: api.update,
     },
     key: ['items'],
-  });
-
-  const extendedHook = apiHook.withCustomMutation({
-    name: 'recreate',
-    run: (id: number) => api.recreate(id),
-    update: (items, result, oldId) => [
-      ...items.filter(item => item.id !== oldId),
-      result,
-    ],
-  });
-
-  return extendedHook;
+  })
+    .withCustomMutation({
+      name: 'recreate',
+      run: (id: number) => api.recreate(id),
+      update: (items, result, oldId) => [
+        ...items.filter(item => item.id !== oldId),
+        result,
+      ],
+    })
+    .withCustomMutation({
+      name: 'clear',
+      run: () => api.clear(),
+      update: () => [],
+    });
 };

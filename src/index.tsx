@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 const withCustomMutation = <CrudListType, Item>(
   controller: CrudListType,
   key: ReadonlyArray<any>
-) => <Argument, Name extends string, Result>(props: {
+) => <Name extends string, Result, Argument>(props: {
   name: Name;
   run: (variables: Argument) => Promise<Result>;
   update: (items: Item[], result: Result, variables: Argument) => Item[];
