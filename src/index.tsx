@@ -10,7 +10,7 @@ const withCustomMutation = <CrudListType, Item>(
   name: Name;
   run: (variables: Argument) => Promise<Result>;
   update: (items: Item[], result: Result, variables: Argument) => Item[];
-}): CrudListType & CustomMutationFields<Argument, Name, Result> => {
+}) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: props.run,
