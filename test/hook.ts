@@ -1,19 +1,18 @@
 import { createMockAPI } from './api.mock';
-import { useCrudList } from '../src';
+import { CrudListMethods, useCrudList } from '../src';
 import { useMemo } from 'react';
 
 export const useItems = () => {
   const api = useMemo(createMockAPI, []);
+
   return useCrudList({
-    crud: {
-      create: api.create,
-      delete: api.delete,
-      read: api.read,
-      update: api.update,
-    },
     key: ['items'],
+    list: () => api.list(),
   })
-    .withCustomMutation({
+    .addMethod(CrudListMethods.create(api.create))
+    .addMethod(CrudListMethods.delete(api.delete))
+    .addMethod(CrudListMethods.update(api.update))
+    .addMethod({
       name: 'recreate',
       run: (id: number) => api.recreate(id),
       update: (items, result, oldId) => [
@@ -21,9 +20,5 @@ export const useItems = () => {
         result,
       ],
     })
-    .withCustomMutation({
-      name: 'clear',
-      run: () => api.clear(),
-      update: () => [],
-    });
+    .addMethod({ name: 'clear', run: () => api.clear(), update: () => [] });
 };

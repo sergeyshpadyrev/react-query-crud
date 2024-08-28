@@ -19,12 +19,12 @@ export const createMockAPI = () => {
         items.push(newItem);
         resolve(newItem);
       }),
-    delete: (id: number): Promise<void> =>
+    delete: ({ id }: { id: number }): Promise<void> =>
       new Promise(resolve => {
         items = items.filter(item => item.id !== id);
         resolve();
       }),
-    read: (): Promise<TestItem[]> => Promise.resolve(items),
+    list: (): Promise<TestItem[]> => Promise.resolve(items),
     recreate: (id: number): Promise<TestItem> =>
       new Promise(resolve => {
         const item = items.find(item => item.id === id);
@@ -32,10 +32,16 @@ export const createMockAPI = () => {
         items = [...items.filter(item => item.id !== id), newItem];
         resolve(newItem);
       }),
-    update: (id: number, updating: { name: string }): Promise<TestItem> =>
+    update: ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: { name: string };
+    }): Promise<TestItem> =>
       new Promise(resolve => {
         items = items.map(item =>
-          item.id === id ? { ...item, ...updating } : item
+          item.id === id ? { ...item, ...data } : item
         );
         resolve(items.find(item => item.id === id)!);
       }),

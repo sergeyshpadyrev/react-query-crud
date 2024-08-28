@@ -38,7 +38,7 @@ describe('useCrudList', () => {
     const hook = renderHook(useItems, { wrapper });
     await waitFor(() => hook.result.current.listQuery.isSuccess);
 
-    await hook.result.current.delete(2);
+    await hook.result.current.delete({ id: 2 });
     await waitFor(() => hook.result.current.deleteMutation.isSuccess);
     expect(hook.result.current.list).toEqual([defaultItems[0]]);
   });
@@ -47,7 +47,7 @@ describe('useCrudList', () => {
     const hook = renderHook(useItems, { wrapper });
     await waitFor(() => hook.result.current.listQuery.isSuccess);
 
-    await hook.result.current.update(2, { name: 'Charlie' });
+    await hook.result.current.update({ id: 2, data: { name: 'Charlie' } });
     await waitFor(() => hook.result.current.updateMutation.isSuccess);
     expect(hook.result.current.list).toEqual([
       defaultItems[0],

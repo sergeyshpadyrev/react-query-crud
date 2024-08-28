@@ -28,19 +28,17 @@ type Item = {
     name: string
 }
 
-const items = useCrudList<Item>({
-  crud: {
-    create: data => api.items.create(data), // This method should return Item
-    delete: id => api.items.delete(id),
-    read: () => api.items.fetch(), // This method should return Item[]
-    update: (id, data) => api.items.update(id, data), // This method should return Item
-  },
-  key: 'items'
-});
+const items = useCrudList({
+    key: ['items'],
+    list: () => api.items.fetch(), // This API method should return Item[]
+  })
+    .addMethod(CrudListMethods.create(data => api.items.create(data))) // This API method should return Item
+    .addMethod(CrudListMethods.delete(({id}) => api.delete(id))) // This API method should return void
+    .addMethod(CrudListMethods.update(({id, data}) => api.update(id, data))) // This API method should return Item
 
 const onClickCreate = () => items.create({ name: 'New item' });
-const onClickDelete = (id: string) => items.delete(id);
-const onClickUpdate = (id: string, newName: string) => items.update(id, {name: newName});
+const onClickDelete = (id: string) => items.delete({id});
+const onClickUpdate = (id: string, newName: string) => items.update({id, data: {name: newName}});
 
 return (
   <div>
