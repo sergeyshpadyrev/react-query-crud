@@ -29,10 +29,13 @@ type Item = {
 }
 
 const items = useCrudList<Item>({
-  create: data => api.items.create(data), // This method should return Item
-  delete: id => api.items.delete(id),
-  list: () => api.items.fetch(), // This method should return Item[]
-  update: (id, data) => api.items.update(id, data), // This method should return Item
+  key: 'items',
+  methods: {
+    create: data => api.items.create(data), // This method should return Item
+    delete: id => api.items.delete(id),
+    read: () => api.items.fetch(), // This method should return Item[]
+    update: (id, data) => api.items.update(id, data), // This method should return Item
+  }
 });
 
 const onClickCreate = () => items.create({ name: 'New item' });

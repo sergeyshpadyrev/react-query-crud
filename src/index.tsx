@@ -13,9 +13,9 @@ export const useCrudList = <
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: (item: ItemCreateData) => options.create(item),
+    mutationFn: (item: ItemCreateData) => options.methods.create(item),
     onSuccess: (item: Item) => {
-      queryClient.setQueryData(options.listKey, (items: Item[] | undefined) =>
+      queryClient.setQueryData(options.key, (items: Item[] | undefined) =>
         items ? [...items, item] : [item]
       );
     },
@@ -26,20 +26,20 @@ export const useCrudList = <
   );
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: Id) => options.delete(id),
+    mutationFn: async (id: Id) => options.methods.delete(id),
     onError: (
       _error: Error,
       _id: Id,
       context: { previousItems: Item[] | undefined } | undefined
     ) => {
       if (!context?.previousItems) return;
-      queryClient.setQueryData(options.listKey, context.previousItems);
+      queryClient.setQueryData(options.key, context.previousItems);
     },
     onMutate: (id: Id) => {
-      const previousItems = queryClient.getQueryData(options.listKey) as
+      const previousItems = queryClient.getQueryData(options.key) as
         | Item[]
         | undefined;
-      queryClient.setQueryData(options.listKey, (items: Item[] | undefined) =>
+      queryClient.setQueryData(options.key, (items: Item[] | undefined) =>
         items?.filter(item => item.id !== id)
       );
       return { previousItems };
@@ -51,21 +51,21 @@ export const useCrudList = <
   );
 
   const listQuery = useQuery({
-    queryKey: options.listKey,
-    queryFn: () => options.list(),
+    queryKey: options.key,
+    queryFn: () => options.methods.read(),
   });
   const list = useMemo(() => {
     if (!listQuery.data) return [];
-    if (!options.listOrder) return listQuery.data;
+    if (!options.settings.listOrder) return listQuery.data;
 
-    return options.listOrder(listQuery.data);
+    return options.settings.listOrder(listQuery.data);
   }, [listQuery.data]);
 
   const updateMutation = useMutation({
     mutationFn: (props: { id: Id; item: ItemUpdateData }) =>
-      options.update(props.id, props.item),
+      options.methods.update(props.id, props.item),
     onSuccess: (updatedItem: Item) => {
-      queryClient.setQueryData(options.listKey, (items: Item[] | undefined) =>
+      queryClient.setQueryData(options.key, (items: Item[] | undefined) =>
         items?.map(item => (item.id === updatedItem.id ? updatedItem : item))
       );
     },
