@@ -3,13 +3,13 @@ import { CrudList, CrudListOptions } from './types';
 import { useCallback, useMemo } from 'react';
 
 export const useCrudList = <
-  Item extends { id: Id },
   Id,
+  Item extends { id: Id },
   ItemCreateData = Partial<Item>,
   ItemUpdateData = Partial<Item>
 >(
-  options: CrudListOptions<Item, Id, ItemCreateData, ItemUpdateData>
-): CrudList<Item, Id, ItemCreateData, ItemUpdateData> => {
+  options: CrudListOptions<Id, Item, ItemCreateData, ItemUpdateData>
+): CrudList<Id, Item, ItemCreateData, ItemUpdateData> => {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
