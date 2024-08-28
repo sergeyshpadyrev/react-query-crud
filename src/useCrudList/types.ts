@@ -1,3 +1,4 @@
+import { AllowedMethodName } from './types.unformatted';
 import { UseQueryResult } from '@tanstack/react-query';
 
 export interface CrudList<Id, Item extends { id: Id }> {
@@ -19,7 +20,7 @@ export interface MethodOptions<
   Name extends string,
   Result
 > {
-  name: Name;
+  name: AllowedMethodName<Name>;
   run: (variables: Argument) => Promise<Result>;
   update: (items: Item[], result: Result, variables: Argument) => Item[];
 }

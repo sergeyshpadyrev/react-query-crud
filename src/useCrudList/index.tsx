@@ -1,4 +1,4 @@
-import { AdditionalMethodFields } from './types.unformatted';
+import { AdditionalMethodFields, AllowedMethodName } from './types.unformatted';
 import { CrudList, CrudListOptions } from './types';
 import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -7,7 +7,7 @@ const withAdditionalMethod = <CrudListType, Item>(
   controller: CrudListType,
   key: ReadonlyArray<any>
 ) => <Name extends string, Result, Argument>(props: {
-  name: Name;
+  name: AllowedMethodName<Name>;
   run: (variables: Argument) => Promise<Result>;
   update: (items: Item[], result: Result, variables: Argument) => Item[];
 }) => {
