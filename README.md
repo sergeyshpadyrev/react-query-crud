@@ -21,7 +21,7 @@ yarn add react-query-crud
 
 ```js
 import api from './api';
-import { useCrudList } from 'react-query-crud';
+import { CrudListMethods, useCrudList } from 'react-query-crud';
 
 type Item = {
     id: string

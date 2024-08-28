@@ -1,6 +1,6 @@
 {
   "name": "react-query-crud",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "license": "MIT",
   "author": "Sergey Shpadyrev",
   "main": "dist/index.js",
