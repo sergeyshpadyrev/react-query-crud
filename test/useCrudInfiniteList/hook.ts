@@ -12,5 +12,7 @@ export const useItems = (limit: number = 5) => {
       pages.length > 0 ? pages[pages.length - 1].canFetchMore : true,
     listPageParam: pages =>
       pages.reduce((acc, page) => acc + page.items.length, 0),
-  }).addMethod(CrudInfiniteListMethods.create(api.create));
+  })
+    .addMethod(CrudInfiniteListMethods.create(api.create))
+    .addMethod(CrudInfiniteListMethods.delete(api.delete));
 };
