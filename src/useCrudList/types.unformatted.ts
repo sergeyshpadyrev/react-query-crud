@@ -11,8 +11,6 @@ type IfUnknown<T, TrueType, FalseType> = unknown extends T
     : FalseType
   : FalseType;
 
-  
-
 export type AdditionalMethodFields<Argument, Name extends string, Result> = 
   { [name in Name]:
     IfUnknown<
