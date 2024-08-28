@@ -82,6 +82,7 @@ export const useCrudList = <
     deleteMutation,
     list,
     listQuery,
+    options,
     update,
     updateMutation,
   };

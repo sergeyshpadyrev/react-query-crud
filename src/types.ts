@@ -12,6 +12,7 @@ export type CrudList<
   deleteMutation: UseMutationResult<void, Error, Id, unknown>;
   list: Item[];
   listQuery: UseQueryResult<Item[]>;
+  options: CrudListOptions<Id, Item, ItemCreateData, ItemUpdateData>;
   update: (id: Id, data: ItemUpdateData) => Promise<Item>;
   updateMutation: UseMutationResult<
     Item,
