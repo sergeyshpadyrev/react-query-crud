@@ -1,5 +1,5 @@
 import { createMockAPI } from './api.mock';
-import { CrudListMethods, useCrudList } from '../src';
+import { CrudListMethods, useCrudList } from '../../src';
 import { useMemo } from 'react';
 
 export const useItems = () => {

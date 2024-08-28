@@ -1,4 +1,4 @@
-import { MethodOptions } from './types';
+import { CrudListMethodOptions } from './types';
 
 export const CrudListMethods = {
   create: <Id, Item extends { id: Id }, ItemCreateData>(
@@ -8,7 +8,7 @@ export const CrudListMethods = {
       name: 'create',
       run,
       update: (items: Item[], result: Item) => [...items, result],
-    } as MethodOptions<ItemCreateData, Id, Item, 'create', Item>),
+    } as CrudListMethodOptions<ItemCreateData, Id, Item, 'create', Item>),
   delete: <Id, Item extends { id: Id }>(
     run: (variables: { id: Id }) => Promise<void>
   ) =>
@@ -17,7 +17,7 @@ export const CrudListMethods = {
       run,
       update: (items: Item[], _result: void, variables: { id: Id }) =>
         items.filter(item => item.id !== variables.id),
-    } as MethodOptions<{ id: Id }, Id, Item, 'delete', void>),
+    } as CrudListMethodOptions<{ id: Id }, Id, Item, 'delete', void>),
   update: <Id, Item extends { id: Id }, ItemUpdateData = Partial<Item>>(
     run: (variables: { id: Id; data: ItemUpdateData }) => Promise<Item>
   ) =>
@@ -26,7 +26,7 @@ export const CrudListMethods = {
       run,
       update: (items: Item[], result: Item) =>
         items.map(item => (item.id === result.id ? result : item)),
-    } as MethodOptions<
+    } as CrudListMethodOptions<
       { id: Id; data: ItemUpdateData },
       Id,
       Item,

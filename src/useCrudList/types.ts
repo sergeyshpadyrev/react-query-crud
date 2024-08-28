@@ -13,7 +13,7 @@ export interface CrudListOptions<Id, Item extends { id: Id }> {
   listOrder?: (items: Item[]) => Item[];
 }
 
-export interface MethodOptions<
+export interface CrudListMethodOptions<
   Argument,
   Id,
   Item extends { id: Id },
