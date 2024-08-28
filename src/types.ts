@@ -27,14 +27,14 @@ export interface CrudListOptions<
   ItemCreateData = Partial<Item>,
   ItemUpdateData = Partial<Item>
 > {
-  key: any;
-  methods: {
+  crud: {
     create: (item: ItemCreateData) => Promise<Item>;
     delete: (id: Id) => Promise<void>;
     read: () => Promise<Item[]>;
     update: (id: Id, data: ItemUpdateData) => Promise<Item>;
   };
+  key: any;
   settings: {
-    listOrder?: (items: Item[]) => Item[];
+    order?: (items: Item[]) => Item[];
   };
 }

@@ -13,7 +13,7 @@ export const useCrudList = <
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: (item: ItemCreateData) => options.methods.create(item),
+    mutationFn: (item: ItemCreateData) => options.crud.create(item),
     onSuccess: (item: Item) => {
       queryClient.setQueryData(options.key, (items: Item[] | undefined) =>
         items ? [...items, item] : [item]
@@ -26,7 +26,7 @@ export const useCrudList = <
   );
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: Id) => options.methods.delete(id),
+    mutationFn: async (id: Id) => options.crud.delete(id),
     onError: (
       _error: Error,
       _id: Id,
@@ -52,18 +52,18 @@ export const useCrudList = <
 
   const listQuery = useQuery({
     queryKey: options.key,
-    queryFn: () => options.methods.read(),
+    queryFn: () => options.crud.read(),
   });
   const list = useMemo(() => {
     if (!listQuery.data) return [];
-    if (!options.settings.listOrder) return listQuery.data;
+    if (!options.settings.order) return listQuery.data;
 
-    return options.settings.listOrder(listQuery.data);
+    return options.settings.order(listQuery.data);
   }, [listQuery.data]);
 
   const updateMutation = useMutation({
     mutationFn: (props: { id: Id; item: ItemUpdateData }) =>
-      options.methods.update(props.id, props.item),
+      options.crud.update(props.id, props.item),
     onSuccess: (updatedItem: Item) => {
       queryClient.setQueryData(options.key, (items: Item[] | undefined) =>
         items?.map(item => (item.id === updatedItem.id ? updatedItem : item))
