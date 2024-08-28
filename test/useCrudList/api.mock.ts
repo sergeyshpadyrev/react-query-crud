@@ -24,7 +24,7 @@ export const createMockAPI = () => {
         items = items.filter(item => item.id !== id);
         resolve();
       }),
-    list: (): Promise<TestItem[]> => Promise.resolve(items),
+    list: (): Promise<TestItem[]> => Promise.resolve([...items]),
     recreate: (id: number): Promise<TestItem> =>
       new Promise(resolve => {
         const item = items.find(item => item.id === id);

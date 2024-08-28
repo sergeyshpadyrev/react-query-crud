@@ -2,11 +2,11 @@ import { createMockAPI } from './api.mock';
 import { CrudListMethods, useCrudList } from '../../src';
 import { useMemo } from 'react';
 
-export const useItems = () => {
+export const useItems = (testId: string) => {
   const api = useMemo(createMockAPI, []);
 
   return useCrudList({
-    key: ['items'],
+    key: ['items', testId],
     list: () => api.list(),
   })
     .addMethod(CrudListMethods.create(api.create))
