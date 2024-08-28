@@ -3,8 +3,8 @@ import { UseMutationResult, UseQueryResult } from '@tanstack/react-query';
 export type CrudList<
   Item extends { id: Id },
   Id,
-  ItemCreateData = Partial<Item>,
-  ItemUpdateData = Partial<Item>
+  ItemCreateData,
+  ItemUpdateData
 > = {
   create: (item: ItemCreateData) => Promise<Item>;
   createMutation: UseMutationResult<Item, Error, ItemCreateData, unknown>;
@@ -33,8 +33,8 @@ export interface CrudListOptions<
     read: () => Promise<Item[]>;
     update: (id: Id, data: ItemUpdateData) => Promise<Item>;
   };
-  key: any;
-  settings: {
+  key: ReadonlyArray<any>;
+  settings?: {
     order?: (items: Item[]) => Item[];
   };
 }

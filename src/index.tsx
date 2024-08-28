@@ -56,9 +56,9 @@ export const useCrudList = <
   });
   const list = useMemo(() => {
     if (!listQuery.data) return [];
-    if (!options.settings.order) return listQuery.data;
+    if (!options?.settings?.order) return listQuery.data;
 
-    return options.settings.order(listQuery.data);
+    return options?.settings?.order(listQuery.data);
   }, [listQuery.data]);
 
   const updateMutation = useMutation({
