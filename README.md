@@ -53,6 +53,11 @@ return (
 
 ### useCrudList
 
+#### Generic types:
+
+-   `Id`
+-   `Item extends { id: Id }`
+
 #### Options:
 
 -   Name: `key` <br/>
@@ -93,7 +98,7 @@ return (
 ```ts
 import { CrudListMethods, useCrudList } from 'react-query-crud';
 
-return useCrudList({
+useCrudList({
     key: ['items'],
     list: () => api.fetchItems(),
 })
@@ -105,4 +110,90 @@ return useCrudList({
         run: (id: number) => api.recreate(id),
         update: (items, result, oldId) => [...items.filter(item => item.id !== oldId), result],
     });
+```
+
+### useCrudInfiniteList
+
+#### Generic types:
+
+-   `Id`
+-   `Item extends { id: Id }`
+-   `Page extends { items: Item[] }`
+-   `PageParam`
+
+#### Options:
+
+-   Name: `key` <br/>
+    Type: `string` <br/>
+    Required <br/>
+    Description: query key for `react-query` <br/>
+
+-   Name: `list` <br/>
+    Type: `(pageParam: PageParam) => Promise<Page>` <br/>
+    Required <br/>
+    Description: function to fetch items <br/>
+
+-   Name: `listHasMore` <br/>
+    Type: `(pages: Page[]) => boolean` <br/>
+    Required <br/>
+    Description: function to check if list has more items <br/>
+
+-   Name: `listPageParam` <br/>
+    Type: `(pages: Page[]) => PageParam` <br/>
+    Required <br/>
+    Description: function to get page param for next page <br/>
+
+-   Name: `listOrder` <br/>
+    Type: `(item: Item) => Promise<Item[]>` <br/>
+    Optional <br/>
+    Description: function to sort items <br/>
+
+#### Returned object:
+
+-   Name: `list` <br/>
+    Type: `Item[]` <br/>
+    Description: list of items <br/>
+
+-   Name: `listFetchMore` <br/>
+    Type: `() => void` <br/>
+    Description: function to fetch more elements <br/>
+
+-   Name: `listHasMore` <br/>
+    Type: `boolean` <br/>
+    Description: flag that shows if list has more elements <br/>
+
+-   Name: `listQuery` <br/>
+    Type: `UseInfinteQueryResult<InfiniteData<Page, PageParam>>` <br/>
+    Description: `react-query` infinite query <br/>
+
+-   Name: `options` <br/>
+    Type: `CrudListInfiniteOptions<Id, Item extends { id: Id }, Page, Param>` <br/>
+    Description: original options <br/>
+
+-   Name: `addMethod` <br/>
+    Type: `{ name: string; run: (variables: Argument) => Promise<Result>; update: (pages: Page[], result: Result, variables: Argument) => Page[]; }` <br/>
+    Description: function to add method <br/>
+
+#### Example:
+
+```ts
+import { CrudInfiniteListMethods, useCrudInfiniteList } from 'react-query-crud';
+
+useCrudInfiniteList({
+    key: ['infinite-items'],
+    list: (offset: number) => api.list(offset, limit),
+    listHasMore: pages => (pages.length > 0 ? pages[pages.length - 1].canFetchMore : true),
+    listPageParam: pages => pages.reduce((acc, page) => acc + page.items.length, 0),
+})
+    .addMethod(CrudInfiniteListMethods.create(api.create))
+    .addMethod(CrudInfiniteListMethods.delete(api.delete))
+    .addMethod(CrudInfiniteListMethods.update(api.update))
+    .addMethod(
+      name: 'recreate',
+      run: (id: number) => api.recreate(id),
+      update: (pages: Page[], result: Item, id: number) =>
+        pages.map(page => ({
+          ...page,
+          items: page.items.map(item => (item.id === id ? result : item)),
+        })),);
 ```
