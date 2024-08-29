@@ -51,9 +51,9 @@ return (
 
 ## API documentation
 
-#### useCrudList
+### useCrudList
 
-_Options_:
+#### Options:
 
 -   Name: `key` <br/>
     Type: `string` <br/>
@@ -70,7 +70,7 @@ _Options_:
     Optional <br/>
     Description: function to sort items <br/>
 
-_Returned object_:
+#### Returned object:
 
 -   Name: `list` <br/>
     Type: `Item[]` <br/>
@@ -87,3 +87,22 @@ _Returned object_:
 -   Name: `addMethod` <br/>
     Type: `{ name: string; run: (variables: Argument) => Promise<Result>; update: (items: Item[], result: Result, variables: Argument) => Item[]; }` <br/>
     Description: function to add method <br/>
+
+#### Example:
+
+```ts
+import { CrudListMethods, useCrudList } from 'react-query-crud';
+
+return useCrudList({
+    key: ['items'],
+    list: () => api.fetchItems(),
+})
+    .addMethod(CrudListMethods.create((data: { name: string }) => api.createItem(data)))
+    .addMethod(CrudListMethods.delete(({ id }: { id: string }) => api.deleteItem(id)))
+    .addMethod(CrudListMethods.update(({ id: data }: { id: string; data: { name: string } }) => api.update(id, data)))
+    .addMethod({
+        name: 'recreate',
+        run: (id: number) => api.recreate(id),
+        update: (items, result, oldId) => [...items.filter(item => item.id !== oldId), result],
+    });
+```
