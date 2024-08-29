@@ -81,6 +81,10 @@ return (
     Type: `Item[]` <br/>
     Description: list of items <br/>
 
+-   Name: `listLoading` <br/>
+    Type: `boolean` <br/>
+    Description: list loading flag <br/>
+
 -   Name: `listQuery` <br/>
     Type: `UseQueryResult<Item[]>` <br/>
     Description: `react-query` query <br/>
@@ -161,6 +165,10 @@ useCrudList({
 -   Name: `listHasMore` <br/>
     Type: `boolean` <br/>
     Description: flag that shows if list has more elements <br/>
+
+-   Name: `listLoading` <br/>
+    Type: `boolean` <br/>
+    Description: list loading flag <br/>
 
 -   Name: `listQuery` <br/>
     Type: `UseInfinteQueryResult<InfiniteData<Page, PageParam>>` <br/>

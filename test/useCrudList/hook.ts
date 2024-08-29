@@ -3,22 +3,19 @@ import { CrudListMethods, useCrudList } from '../../src';
 import { useMemo } from 'react';
 
 export const useItems = (testId: string) => {
-  const api = useMemo(createMockAPI, []);
+    const api = useMemo(createMockAPI, []);
 
-  return useCrudList({
-    key: ['items', testId],
-    list: () => api.list(),
-  })
-    .addMethod(CrudListMethods.create(api.create))
-    .addMethod(CrudListMethods.delete(api.delete))
-    .addMethod(CrudListMethods.update(api.update))
-    .addMethod({
-      name: 'recreate',
-      run: (id: number) => api.recreate(id),
-      update: (items, result, oldId) => [
-        ...items.filter(item => item.id !== oldId),
-        result,
-      ],
+    return useCrudList({
+        key: ['items', testId],
+        list: () => api.list(),
     })
-    .addMethod({ name: 'clear', run: () => api.clear(), update: () => [] });
+        .addMethod(CrudListMethods.create(api.create))
+        .addMethod(CrudListMethods.delete(api.delete))
+        .addMethod(CrudListMethods.update(api.update))
+        .addMethod({
+            name: 'recreate',
+            run: (id: number) => api.recreate(id),
+            update: (items, result, oldId) => [...items.filter(item => item.id !== oldId), result],
+        })
+        .addMethod({ name: 'clear', run: () => api.clear(), update: () => [] });
 };
