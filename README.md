@@ -72,17 +72,17 @@ Options:
 
 Returned object:
 
--   Name: `list`
-    Type: `Item[]`
-    Required
-    Description: list of items
+-   Name: `list` <br/>
+    Type: `Item[]` <br/>
+    Required <br/>
+    Description: list of items <br/>
 
--   Name: `listQuery`
-    Type: `UseQueryResult<Item[]>`
-    Required
-    Description: `react-query` query
+-   Name: `listQuery` <br/>
+    Type: `UseQueryResult<Item[]>` <br/>
+    Required <br/>
+    Description: `react-query` query <br/>
 
--   Name: `options`
-    Type: `CrudListOptions<Id, Item extends { id: Id }>`
-    Required
-    Description: original options
+-   Name: `options` <br/>
+    Type: `CrudListOptions<Id, Item extends { id: Id }>` <br/>
+    Required <br/>
+    Description: original options <br/>
