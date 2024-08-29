@@ -55,20 +55,20 @@ return (
 
 Options:
 
--   Name: `key`
-    Type: `string`
-    Required
-    Description: query key for `react-query`
+-   Name: `key` <br/>
+    Type: `string` <br/>
+    Required <br/>
+    Description: query key for `react-query` <br/>
 
--   Name: `list`
-    Type: `() => Promise<Item[]>`
-    Required
-    Description: function to fetch items
+-   Name: `list` <br/>
+    Type: `() => Promise<Item[]>` <br/>
+    Required <br/>
+    Description: function to fetch items <br/>
 
--   Name: `listOrder`
-    Type: `(item: Item) => Promise<Item[]>`
-    Optional
-    Description: function to sort items
+-   Name: `listOrder` <br/>
+    Type: `(item: Item) => Promise<Item[]>` <br/>
+    Optional <br/>
+    Description: function to sort items <br/>
 
 Returned object:
 
