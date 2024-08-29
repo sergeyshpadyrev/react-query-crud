@@ -53,7 +53,7 @@ return (
 
 #### useCrudList
 
-Options:
+_Options_:
 
 -   Name: `key` <br/>
     Type: `string` <br/>
@@ -70,19 +70,20 @@ Options:
     Optional <br/>
     Description: function to sort items <br/>
 
-Returned object:
+_Returned object_:
 
 -   Name: `list` <br/>
     Type: `Item[]` <br/>
-    Required <br/>
     Description: list of items <br/>
 
 -   Name: `listQuery` <br/>
     Type: `UseQueryResult<Item[]>` <br/>
-    Required <br/>
     Description: `react-query` query <br/>
 
 -   Name: `options` <br/>
     Type: `CrudListOptions<Id, Item extends { id: Id }>` <br/>
-    Required <br/>
     Description: original options <br/>
+
+-   Name: `addMethod` <br/>
+    Type: `{ name: string; run: (variables: Argument) => Promise<Result>; update: (items: Item[], result: Result, variables: Argument) => Item[]; }` <br/>
+    Description: function to add method <br/>
