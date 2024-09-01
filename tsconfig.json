@@ -2,11 +2,12 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
-    "jsx": "react",
-    "module": "commonjs",
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "node",
     "outDir": "./dist",
     "strict": true,
-    "target": "es6"
+    "target": "es5"
   },
   "include": ["src/**/*"]
 }
