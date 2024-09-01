@@ -3,11 +3,11 @@
         "declaration": true,
         "esModuleInterop": true,
         "jsx": "react",
-        "module": "CommonJS",
+        "lib": ["DOM", "DOM.Iterable", "ES2022"],
+        "module": "ES2022",
         "moduleResolution": "Node",
         "outDir": "./dist",
         "strict": true,
-        "target": "ES2015"
-    },
-    "include": ["src/**/*"]
+        "target": "ES2020"
+    }
 }
