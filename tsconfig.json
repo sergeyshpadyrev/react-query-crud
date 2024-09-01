@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
-    "module": "commonjs",
-    "target": "es6",
     "declaration": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "commonjs",
+    "outDir": "./dist",
     "strict": true,
-    "esModuleInterop": true
+    "target": "es6"
   },
   "include": ["src/**/*"]
 }
