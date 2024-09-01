@@ -3,10 +3,11 @@
     "declaration": true,
     "esModuleInterop": true,
     "jsx": "react",
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "node",
     "outDir": "./dist",
     "strict": true,
-    "target": "es5"
+    "target": "es6"
   },
   "include": ["src/**/*"]
 }
