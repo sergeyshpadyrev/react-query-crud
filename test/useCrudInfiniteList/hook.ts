@@ -8,8 +8,8 @@ export const useItems = (testId: string, limit: number = 5) => {
     const crud = useCrudInfiniteList({
         key: ['infinite-items', testId],
         list: (offset: number) => api.list(offset, limit),
-        listHasMore: pages => (pages.length > 0 ? pages[pages.length - 1].canFetchMore : true),
-        listPageParam: pages => pages.reduce((acc, page) => acc + page.items.length, 0),
+        listHasMore: (pages) => (pages.length > 0 ? pages[pages.length - 1]?.canFetchMore ?? true : true),
+        listPageParam: (pages) => pages.reduce((acc, page) => acc + page.items.length, 0),
     });
 
     return {
