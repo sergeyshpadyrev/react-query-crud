@@ -1,4 +1,4 @@
-import { CrudMethods, useCrud } from '../../src';
+import { CrudMethods, useCrud } from '../../dist';
 import { createMockAPI } from './api.mock';
 import { useMemo } from 'react';
 

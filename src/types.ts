@@ -1,3 +1,3 @@
-export * from './useCrud/types';
-export * from './useCrudList/types';
-export * from './useCrudInfiniteList/types';
+export type * from './useCrud/types';
+export type * from './useCrudList/types';
+export type * from './useCrudInfiniteList/types';

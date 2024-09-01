@@ -1,5 +1,5 @@
 import { createMockAPI } from './api.mock';
-import { CrudInfiniteListMethods, useCrudInfiniteList } from '../../src';
+import { CrudInfiniteListMethods, useCrudInfiniteList } from '../../dist';
 import { useMemo } from 'react';
 
 export const useItems = (testId: string, limit: number = 5) => {
