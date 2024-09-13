@@ -1,13 +1,9 @@
 import { createMockAPI, TestItem } from './api.mock';
-import { CrudInfiniteListMethods, useCrud, useCrudInfiniteList } from '../../src';
+import { CrudInfiniteListMethods, oneCrudKey, useCrud, useCrudInfiniteList } from '../../src';
 import { useMemo } from 'react';
 
-export const useItem = (
-    key: ReadonlyArray<any>,
-    id: number,
-    api: { one: (id: number) => Promise<TestItem | null> },
-) => {
-    const crud = useCrud({ data: () => api.one(id), key });
+export const useItem = (testId: string, id: number, api: { one: (id: number) => Promise<TestItem | null> }) => {
+    const crud = useCrud({ data: () => api.one(id), key: oneCrudKey(['infinite-items', testId], id) });
     return crud;
 };
 

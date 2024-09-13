@@ -8,7 +8,8 @@ import {
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 
-const getOnePrefix = (key: ReadonlyArray<any>) => [...key, 'one'];
+const oneCrudKeyPrefix = (key: ReadonlyArray<any>) => [...key, 'one'];
+export const oneCrudKey = (key: ReadonlyArray<any>, id: any) => [...oneCrudKeyPrefix(key), id];
 
 const createMethod = <Argument, Id, Item extends { id: Id }, Page extends { items: Item[] }, PageParam, Result>(
     options: CrudInfiniteListOptions<Id, Item, Page, PageParam>,
@@ -21,7 +22,7 @@ const createMethod = <Argument, Id, Item extends { id: Id }, Page extends { item
             if (!!method.updateOne) {
                 const queries = queryClient.getQueryCache().getAll();
                 const oneQueries = queries.filter((query) =>
-                    arrayStartsWith(query.queryKey, getOnePrefix(options.key)),
+                    arrayStartsWith(query.queryKey, oneCrudKeyPrefix(options.key)),
                 );
                 oneQueries.forEach((oneQuery) => {
                     queryClient.setQueryData(oneQuery.queryKey, (item: Item | null) =>
@@ -80,7 +81,7 @@ export const useCrudInfiniteList = <Id, Item extends { id: Id }, Page extends { 
     }, [listQuery.data]);
     const method = <Argument, Result>(methodOptions: CrudInfiniteListMethodOptions<Argument, Id, Item, Page, Result>) =>
         createMethod(options, methodOptions);
-    const oneCrudKey = useCallback((id: Id) => [...getOnePrefix(options.key), id], [options.key]);
+    const oneCrudKey = useCallback((id: Id) => [...oneCrudKeyPrefix(options.key), id], [options.key]);
 
     return {
         list,

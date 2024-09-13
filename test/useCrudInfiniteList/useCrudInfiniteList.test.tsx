@@ -60,10 +60,7 @@ describe('useCrudInfiniteList', () => {
         const hook = renderHook(() => useItems('one', limit), hookProps);
         await hook.waitFor(() => hook.result.current.listQuery.isSuccess);
 
-        const anotherHook = renderHook(
-            () => useItem(hook.result.current.oneCrudKey(1), 1, hook.result.current.api),
-            hookProps,
-        );
+        const anotherHook = renderHook(() => useItem('one', 1, hook.result.current.api), hookProps);
         await anotherHook.waitFor(() => anotherHook.result.current.dataQuery.isSuccess);
 
         expect(anotherHook.result.current.data).toEqual({ id: 1, name: 'Alice' });
