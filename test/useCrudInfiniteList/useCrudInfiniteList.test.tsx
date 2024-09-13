@@ -3,7 +3,7 @@ import { describe, it, expect } from '@jest/globals';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
-import { useItem, useItems } from './hook';
+import { useItems } from './hook';
 
 const limit = 5;
 
@@ -60,7 +60,7 @@ describe('useCrudInfiniteList', () => {
         const hook = renderHook(() => useItems('one', limit), hookProps);
         await hook.waitFor(() => hook.result.current.listQuery.isSuccess);
 
-        const anotherHook = renderHook(() => useItem('one', 1, hook.result.current.api), hookProps);
+        const anotherHook = renderHook(() => hook.result.current.one(1), hookProps);
         await anotherHook.waitFor(() => anotherHook.result.current.dataQuery.isSuccess);
 
         expect(anotherHook.result.current.data).toEqual({ id: 1, name: 'Alice' });

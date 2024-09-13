@@ -1,3 +1,4 @@
+import { useCrud } from '../useCrud';
 import { arrayStartsWith } from '../utils';
 import {
     CrudInfiniteList,
@@ -6,10 +7,9 @@ import {
     CrudInfiniteListOptions,
 } from './types';
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 const oneCrudKeyPrefix = (key: ReadonlyArray<any>) => [...key, 'one'];
-export const oneCrudKey = (key: ReadonlyArray<any>, id: any) => [...oneCrudKeyPrefix(key), id];
 
 const createMethod = <Argument, Id, Item extends { id: Id }, Page extends { items: Item[] }, PageParam, Result>(
     options: CrudInfiniteListOptions<Id, Item, Page, PageParam>,
@@ -60,6 +60,19 @@ const createMethod = <Argument, Id, Item extends { id: Id }, Page extends { item
     return mutationFunction as CrudInfiniteListMethod<Argument, Result>;
 };
 
+const createOne =
+    <Id, Item extends { id: Id }, Page extends { items: Item[] }, PageParam>(
+        options: CrudInfiniteListOptions<Id, Item, Page, PageParam>,
+        fetch: (id: Id) => Promise<Item | null>,
+    ) =>
+    (id: Id) => {
+        const crud = useCrud({
+            data: () => fetch(id),
+            key: [...oneCrudKeyPrefix(options.key), id],
+        });
+        return crud;
+    };
+
 export const useCrudInfiniteList = <Id, Item extends { id: Id }, Page extends { items: Item[] }, PageParam>(
     options: CrudInfiniteListOptions<Id, Item, Page, PageParam>,
 ): CrudInfiniteList<Id, Item, Page, PageParam> => {
@@ -81,7 +94,7 @@ export const useCrudInfiniteList = <Id, Item extends { id: Id }, Page extends { 
     }, [listQuery.data]);
     const method = <Argument, Result>(methodOptions: CrudInfiniteListMethodOptions<Argument, Id, Item, Page, Result>) =>
         createMethod(options, methodOptions);
-    const oneCrudKey = useCallback((id: Id) => [...oneCrudKeyPrefix(options.key), id], [options.key]);
+    const one = (fetch: (id: Id) => Promise<Item | null>) => createOne(options, fetch);
 
     return {
         list,
@@ -90,7 +103,7 @@ export const useCrudInfiniteList = <Id, Item extends { id: Id }, Page extends { 
         listLoading: listQuery.isLoading,
         listQuery,
         method,
-        oneCrudKey,
+        one,
         options,
     };
 };

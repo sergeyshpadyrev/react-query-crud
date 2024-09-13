@@ -1,3 +1,4 @@
+import { Crud } from '../useCrud/types';
 import { InfiniteData, UseInfiniteQueryResult, UseMutationResult } from '@tanstack/react-query';
 import { IfUnknown } from '../utils/types';
 
@@ -10,7 +11,7 @@ export interface CrudInfiniteList<Id, Item extends { id: Id }, Page extends { it
     method: <Argument, Result>(
         methodOptions: CrudInfiniteListMethodOptions<Argument, Id, Item, Page, Result>,
     ) => CrudInfiniteListMethod<Argument, Result>;
-    oneCrudKey: (id: Id) => ReadonlyArray<any>;
+    one: (fetch: (id: Id) => Promise<Item | null>) => (id: Id) => Crud<Item>;
     options: CrudInfiniteListOptions<Id, Item, Page, PageParam>;
 }
 
