@@ -1,11 +1,14 @@
+import { arrayStartsWith } from '../utils';
 import {
     CrudInfiniteList,
     CrudInfiniteListMethod,
     CrudInfiniteListMethodOptions,
     CrudInfiniteListOptions,
 } from './types';
-import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useMemo } from 'react';
+
+const getOnePrefix = (key: ReadonlyArray<any>) => [...key, 'one'];
 
 const createMethod = <Argument, Id, Item extends { id: Id }, Page extends { items: Item[] }, PageParam, Result>(
     options: CrudInfiniteListOptions<Id, Item, Page, PageParam>,
@@ -14,14 +17,26 @@ const createMethod = <Argument, Id, Item extends { id: Id }, Page extends { item
     const queryClient = useQueryClient();
     const mutation = useMutation({
         mutationFn: method.run,
-        onSuccess: (data, variables) =>
+        onSuccess: (data: Result, variables: Argument) => {
+            if (!!method.updateOne) {
+                const queries = queryClient.getQueryCache().getAll();
+                const oneQueries = queries.filter((query) =>
+                    arrayStartsWith(query.queryKey, getOnePrefix(options.key)),
+                );
+                oneQueries.forEach((oneQuery) => {
+                    queryClient.setQueryData(oneQuery.queryKey, (item: Item | null) =>
+                        method.updateOne!(item, data, variables),
+                    );
+                });
+            }
+
             queryClient.setQueryData(
                 options.key,
                 ({ pages }: { pageParams: PageParam[]; pages: Page[] | undefined }) => {
                     const newPages = method.update(pages ?? [], data, variables);
                     return {
                         pageParams: newPages.reduce(
-                            acc => ({
+                            (acc) => ({
                                 params: [options.listPageParam(acc.restPages), ...acc.params],
                                 restPages: acc.restPages.slice(0, acc.restPages.length - 1),
                             }),
@@ -33,7 +48,8 @@ const createMethod = <Argument, Id, Item extends { id: Id }, Page extends { item
                         pages: newPages,
                     };
                 },
-            ),
+            );
+        },
     });
     const mutationFunction = useMemo(() => {
         const func = (argument: Argument) => mutation.mutateAsync(argument);
@@ -50,12 +66,12 @@ export const useCrudInfiniteList = <Id, Item extends { id: Id }, Page extends { 
         getNextPageParam: (_lastPage: Page, pages: Page[] | undefined) => options.listPageParam(pages ?? []),
         initialPageParam: options.listPageParam([]),
         queryKey: options.key,
-        queryFn: ({ pageParam }) => options.list(pageParam as PageParam),
+        queryFn: ({ pageParam }: any) => options.list(pageParam as PageParam),
     });
     const list = useMemo(() => {
         if (!listQuery.data) return [];
 
-        const items = listQuery.data.pages.flatMap(page => page.items);
+        const items = listQuery.data.pages.flatMap((page: Page) => page.items);
         return !!options.listOrder ? options.listOrder(items) : items;
     }, [listQuery.data]);
     const listHasMore = useMemo(() => {
@@ -64,6 +80,7 @@ export const useCrudInfiniteList = <Id, Item extends { id: Id }, Page extends { 
     }, [listQuery.data]);
     const method = <Argument, Result>(methodOptions: CrudInfiniteListMethodOptions<Argument, Id, Item, Page, Result>) =>
         createMethod(options, methodOptions);
+    const oneCrudKey = useCallback((id: Id) => [...getOnePrefix(options.key), id], [options.key]);
 
     return {
         list,
@@ -72,6 +89,7 @@ export const useCrudInfiniteList = <Id, Item extends { id: Id }, Page extends { 
         listLoading: listQuery.isLoading,
         listQuery,
         method,
+        oneCrudKey,
         options,
     };
 };

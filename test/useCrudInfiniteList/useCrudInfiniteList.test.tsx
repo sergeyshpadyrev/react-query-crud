@@ -3,7 +3,7 @@ import { describe, it, expect } from '@jest/globals';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
-import { useItems } from './hook';
+import { useItem, useItems } from './hook';
 
 const limit = 5;
 
@@ -11,10 +11,11 @@ const queryClient = new QueryClient();
 const wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
+const hookProps = { wrapper };
 
 describe('useCrudInfiniteList', () => {
     it('should initialize with an empty list', () => {
-        const hook = renderHook(() => useItems('emptyList', limit), { wrapper });
+        const hook = renderHook(() => useItems('emptyList', limit), hookProps);
         expect(hook.result.current.list).toEqual([]);
     });
 
@@ -28,7 +29,7 @@ describe('useCrudInfiniteList', () => {
     });
 
     it('should add items on create', async () => {
-        const hook = renderHook(() => useItems('onCreate', limit), { wrapper });
+        const hook = renderHook(() => useItems('onCreate', limit), hookProps);
         await hook.waitFor(() => hook.result.current.listQuery.isSuccess);
 
         await hook.result.current.create({ name: 'Charlie' });
@@ -37,7 +38,7 @@ describe('useCrudInfiniteList', () => {
     });
 
     it('should remove items on delete', async () => {
-        const hook = renderHook(() => useItems('onDelete', limit), { wrapper });
+        const hook = renderHook(() => useItems('onDelete', limit), hookProps);
         await hook.waitFor(() => hook.result.current.listQuery.isSuccess);
 
         await hook.result.current.delete({ id: 1 });
@@ -46,12 +47,35 @@ describe('useCrudInfiniteList', () => {
     });
 
     it('should change items on update', async () => {
-        const hook = renderHook(() => useItems('onUpdate', limit), { wrapper });
+        const hook = renderHook(() => useItems('onUpdate', limit), hookProps);
         await hook.waitFor(() => hook.result.current.listQuery.isSuccess);
 
         await hook.result.current.update({ id: 1, data: { name: 'Charlie' } });
         await hook.waitFor(() => hook.result.current.update.mutation.isSuccess);
 
         expect(hook.result.current.list).toEqual([{ id: 1, name: 'Charlie' }, ...defaultItems.slice(1, 5)]);
+    });
+
+    it('should get one', async () => {
+        const hook = renderHook(() => useItems('one', limit), hookProps);
+        await hook.waitFor(() => hook.result.current.listQuery.isSuccess);
+
+        const anotherHook = renderHook(
+            () => useItem(hook.result.current.oneCrudKey(1), 1, hook.result.current.api),
+            hookProps,
+        );
+        await anotherHook.waitFor(() => anotherHook.result.current.dataQuery.isSuccess);
+
+        expect(anotherHook.result.current.data).toEqual({ id: 1, name: 'Alice' });
+
+        await hook.result.current.update({ id: 1, data: { name: 'Charlie' } });
+        await hook.waitFor(() => hook.result.current.update.mutation.isSuccess);
+
+        expect(anotherHook.result.current.data).toEqual({ id: 1, name: 'Charlie' });
+
+        await hook.result.current.delete({ id: 1 });
+        await hook.waitFor(() => hook.result.current.delete.mutation.isSuccess);
+
+        expect(anotherHook.result.current.data).toBeNull();
     });
 });

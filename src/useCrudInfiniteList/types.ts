@@ -10,6 +10,7 @@ export interface CrudInfiniteList<Id, Item extends { id: Id }, Page extends { it
     method: <Argument, Result>(
         methodOptions: CrudInfiniteListMethodOptions<Argument, Id, Item, Page, Result>,
     ) => CrudInfiniteListMethod<Argument, Result>;
+    oneCrudKey: (id: Id) => ReadonlyArray<any>;
     options: CrudInfiniteListOptions<Id, Item, Page, PageParam>;
 }
 
@@ -32,8 +33,9 @@ export interface CrudInfiniteListMethodOptions<
     Id,
     Item extends { id: Id },
     Page extends { items: Item[] },
-    Result
+    Result,
 > {
     run: (variables: Argument) => Promise<Result>;
     update: (pages: Page[], result: Result, variables: Argument) => Page[];
+    updateOne?: (item: any | null, result: Result, variables: Argument) => any | null;
 }
