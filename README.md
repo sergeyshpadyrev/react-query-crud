@@ -37,7 +37,7 @@ const useItemsCrud = () => {
 
     return {
         ...crud,
-        create: crud.method(CrudListMethods.create(data => api.items.create(data))), // This API method should return Item
+        create: crud.method(CrudListMethods.create((data) => api.items.create(data))), // This API method should return Item
         delete: crud.method(CrudListMethods.delete(({ id }) => api.delete(id))), // This API method should return void
         update: crud.method(CrudListMethods.update(({ id, data }) => api.update(id, data))), // This API method should
     };
@@ -52,7 +52,7 @@ const Comp = () => {
 
     return (
         <div>
-            {items.list.map(item => (
+            {items.list.map((item) => (
                 <div key={item.id}>{item.name}</div>
             ))}
         </div>
@@ -62,13 +62,15 @@ const Comp = () => {
 
 ## API documentation
 
-### useCrud
+### Hooks
 
-#### Generic types:
+#### useCrud
+
+##### Generic types:
 
 -   `Item`
 
-#### Options:
+##### Options:
 
 -   Name: `key` <br/>
     Type: `string` <br/>
@@ -80,7 +82,7 @@ const Comp = () => {
     Required <br/>
     Description: function to fetch item <br/>
 
-#### Returned object:
+##### Returned object:
 
 -   Name: `data` <br/>
     Type: `Item | null` <br/>
@@ -102,7 +104,7 @@ const Comp = () => {
     Type: `CrudOptions<Item>` <br/>
     Description: original options <br/>
 
-#### Example:
+##### Example:
 
 ```ts
 import { CrudMethods, useCrud } from 'react-query-crud';
@@ -115,20 +117,20 @@ const useItems = () => {
     return {
         ...crud,
         create: crud.method(CrudMethods.create((data: { name: string }) => api.createItem(data))),
-        delete: crud.method(CrudMethods.delete(() => api.deleteItem())),
+        delete: crud.method(CrudMethods.delete({ id }: { id: string }) => api.deleteItem(id))),
         update: crud.method(CrudMethods.update((data: { name: string }) => api.updateItem(data))),
     };
 };
 ```
 
-### useCrudList
+#### useCrudList
 
-#### Generic types:
+##### Generic types:
 
 -   `Id`
 -   `Item extends { id: Id }`
 
-#### Options:
+##### Options:
 
 -   Name: `key` <br/>
     Type: `string` <br/>
@@ -145,7 +147,7 @@ const useItems = () => {
     Optional <br/>
     Description: function to sort items <br/>
 
-#### Returned object:
+##### Returned object:
 
 -   Name: `list` <br/>
     Type: `Item[]` <br/>
@@ -167,7 +169,7 @@ const useItems = () => {
     Type: `CrudListOptions<Id, Item extends { id: Id }>` <br/>
     Description: original options <br/>
 
-#### Example:
+##### Example:
 
 ```ts
 import { CrudListMethods, useCrudList } from 'react-query-crud';
@@ -183,7 +185,7 @@ const useItems = () => {
         delete: crud.method(CrudListMethods.delete(({ id }: { id: string }) => api.deleteItem(id))),
         recreate: crud.method({
             run: (id: number) => api.recreate(id),
-            update: (items, result, oldId) => [...items.filter(item => item.id !== oldId), result],
+            update: (items, result, oldId) => [...items.filter((item) => item.id !== oldId), result],
         }),
         update: crud.method(
             CrudListMethods.update(({ id: data }: { id: string; data: { name: string } }) => api.updateItem(id, data)),
@@ -192,16 +194,16 @@ const useItems = () => {
 };
 ```
 
-### useCrudInfiniteList
+#### useCrudInfiniteList
 
-#### Generic types:
+##### Generic types:
 
 -   `Id`
 -   `Item extends { id: Id }`
 -   `Page extends { items: Item[] }`
 -   `PageParam`
 
-#### Options:
+##### Options:
 
 -   Name: `key` <br/>
     Type: `string` <br/>
@@ -228,7 +230,7 @@ const useItems = () => {
     Optional <br/>
     Description: function to sort items <br/>
 
-#### Returned object:
+##### Returned object:
 
 -   Name: `list` <br/>
     Type: `Item[]` <br/>
@@ -251,14 +253,18 @@ const useItems = () => {
     Description: `react-query` infinite query <br/>
 
 -   Name: `method` <br/>
-    Type: `{ run: (variables: Argument) => Promise<Result>; update: (pages: Page[], result: Result, variables: Argument) => Page[]; }` <br/>
-    Description: function to create method <br/>
+    Type: `{ run: (variables: Argument) => Promise<Result>; update: (pages: Page[], result: Result, variables: Argument) => Page[]; updateOne?: (item: Item | null, result: Result, variables: Argument) => Item | null }` <br/>
+    Description: function to create method that can update list and single item of infinite list<br/>
+
+-   Name: `one` <br/>
+    Type: `(run: (id: Id) => Promise<Item>) => Crud<Item>` <br/>
+    Description: function to create crud for single item of infinite list that will be updated by crud methods as well<br/>
 
 -   Name: `options` <br/>
     Type: `CrudListInfiniteOptions<Id, Item extends { id: Id }, Page, Param>` <br/>
     Description: original options <br/>
 
-#### Example:
+##### Example:
 
 ```ts
 import { CrudInfiniteListMethods, useCrudInfiniteList } from 'react-query-crud';
@@ -267,22 +273,72 @@ const useItems = () => {
     const crud = useCrudInfiniteList({
         key: ['infiniteItems'],
         list: (offset: number) => api.list(offset, limit),
-        listHasMore: pages => (pages.length > 0 ? pages[pages.length - 1].canFetchMore : true),
-        listPageParam: pages => pages.reduce((acc, page) => acc + page.items.length, 0),
+        listHasMore: (pages) => (pages.length > 0 ? pages[pages.length - 1].canFetchMore : true),
+        listPageParam: (pages) => pages.reduce((acc, page) => acc + page.items.length, 0),
     });
     return {
         ...crud,
         create: crud.method(CrudInfiniteListMethods.create(api.create)),
         delete: crud.method(CrudInfiniteListMethods.delete(api.delete)),
+        one: crud.one(api.getOne),
         recreate: crud.method({
             run: (id: number) => api.recreate(id),
             update: (pages: Page[], result: Item, id: number) =>
-                pages.map(page => ({
+                pages.map((page) => ({
                     ...page,
-                    items: page.items.map(item => (item.id === id ? result : item)),
+                    items: page.items.map((item) => (item.id === id ? result : item)),
                 })),
         }),
         update: crud.method(CrudInfiniteListMethods.update(api.update)),
     };
 };
+```
+
+### Methods
+
+#### Crud methods templates
+
+The library contains a few common crud methods templates:
+
+##### CrudMethod
+
+-   `CrudMethods.create`
+-   `CrudMethods.delete`
+-   `CrudMethods.update`
+
+##### CrudListMethod
+
+-   `CrudListMethods.create`
+-   `CrudListMethods.delete`
+-   `CrudListMethods.update`
+
+##### CrudInfiniteListMethod
+
+-   `CrudInfiniteListMethods.create`
+-   `CrudInfiniteListMethods.delete`
+-   `CrudInfiniteListMethods.update`
+
+#### Mutation
+
+Every method has `mutation` field that is a mutation from `react-query`
+
+##### Example:
+
+```js
+import { CrudListMethods, useCrudList } from 'react-query-crud';
+
+const useItems = () => {
+    const crud = useCrudList({
+        key: ['items'],
+        list: () => api.fetchItems(),
+    });
+    return {
+        ...crud,
+        create: crud.method(CrudListMethods.create((data: { name: string }) => api.createItem(data))),
+    };
+};
+
+const itemsCrudList = useItems();
+const createItem = () => itemsCrudList.create({ name: 'New item' });
+const createItemProcessing = itemsCrudList.create.mutation.isPending;
 ```
