@@ -57,7 +57,7 @@ describe('useCrudInfiniteList', () => {
     });
 
     it('should get one', async () => {
-        const hook = renderHook(() => useItems('one', limit), hookProps);
+        const hook = renderHook(() => useItems('list and one', limit), hookProps);
         await hook.waitFor(() => hook.result.current.listQuery.isSuccess);
 
         const anotherHook = renderHook(() => hook.result.current.one(1), hookProps);
@@ -71,7 +71,10 @@ describe('useCrudInfiniteList', () => {
         expect(anotherHook.result.current.data).toEqual({ id: 1, name: 'Charlie' });
 
         await hook.result.current.delete({ id: 1 });
-        await hook.waitFor(() => hook.result.current.delete.mutation.isSuccess);
+        await Promise.all([
+            hook.waitFor(() => hook.result.current.delete.mutation.isSuccess),
+            anotherHook.waitFor(() => hook.result.current.delete.mutation.isSuccess),
+        ]);
 
         expect(anotherHook.result.current.data).toBeNull();
     });
