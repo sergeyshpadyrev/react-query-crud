@@ -42,7 +42,7 @@ const createMethod = <Argument, Id, Item extends { id: Id }, Page extends { item
                                 restPages: acc.restPages.slice(0, acc.restPages.length - 1),
                             }),
                             { params: [], restPages: [] } as {
-                                params: PageParam[];
+                                params: (PageParam | null)[];
                                 restPages: Page[];
                             },
                         ).params,
