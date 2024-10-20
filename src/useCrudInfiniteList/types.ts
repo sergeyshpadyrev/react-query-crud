@@ -19,7 +19,7 @@ export interface CrudInfiniteListOptions<Id, Item extends { id: Id }, Page exten
     key: ReadonlyArray<any>;
     list: (pageParam: PageParam) => Promise<Page>;
     listHasMore: (pages: Page[]) => boolean;
-    listPageParam: (pages: Page[]) => PageParam;
+    listPageParam: (pages: Page[]) => PageParam | undefined;
     listOrder?: (items: Item[]) => Item[];
 }
 
