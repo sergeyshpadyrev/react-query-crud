@@ -1,4 +1,4 @@
-import { createMockAPI, TestItem } from './api.mock';
+import { createMockAPI, TestItem } from './api';
 import { CrudInfiniteListMethods, useCrudInfiniteList } from '../../src';
 import { useMemo } from 'react';
 

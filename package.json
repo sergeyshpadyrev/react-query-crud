@@ -35,5 +35,8 @@
     "peerDependencies": {
         "@tanstack/react-query": ">=5",
         "react": ">=16"
+    },
+    "dependencies": {
+        "@normy/react-query": "^0.15.0"
     }
 }
