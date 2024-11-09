@@ -43,4 +43,31 @@ describe('useCrudList', () => {
             { __typename: 'item', id: 3, name: 'Charlie' },
         ]);
     });
+
+    it('should remove items on delete', async () => {
+        const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
+        const items = renderHook(() => itemsAPI.result.current.list(), { wrapper });
+        await items.waitFor(() => items.result.current.isSuccess);
+
+        await itemsAPI.result.current.delete.mutateAsync({ id: 2 });
+        await itemsAPI.waitFor(() => itemsAPI.result.current.delete.isSuccess);
+        items.rerender();
+
+        expect(items.result.current.data).toEqual([defaultItemsWithTypenames[0]]);
+    });
+
+    it('should change items on update', async () => {
+        const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
+        const items = renderHook(() => itemsAPI.result.current.list(), { wrapper });
+        await items.waitFor(() => items.result.current.isSuccess);
+
+        await itemsAPI.result.current.update.mutateAsync({ id: 2, name: 'Charlie' });
+        await itemsAPI.waitFor(() => itemsAPI.result.current.update.isSuccess);
+        items.rerender();
+
+        expect(items.result.current.data).toEqual([
+            defaultItemsWithTypenames[0],
+            { ...defaultItemsWithTypenames[1], name: 'Charlie' },
+        ]);
+    });
 });
