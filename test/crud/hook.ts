@@ -1,19 +1,15 @@
-import { CrudMethods, useCrud } from '../../src';
-import { createMockAPI } from './api.mock';
+import { createMockAPI } from './api';
+import { useCrudQuery } from '../../src';
 import { useMemo } from 'react';
 
 export const useItem = (testId: string) => {
     const api = useMemo(createMockAPI, []);
 
-    const crud = useCrud({
+    const read = useCrudQuery({
         key: ['item', testId],
-        data: () => api.get(),
+        fetch: () => api.get(),
+        typename: 'item',
     });
 
-    return {
-        ...crud,
-        create: crud.method(CrudMethods.create(api.create)),
-        delete: crud.method(CrudMethods.delete(api.delete)),
-        update: crud.method(CrudMethods.update(api.update)),
-    };
+    return { read };
 };

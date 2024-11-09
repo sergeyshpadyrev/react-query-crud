@@ -21,7 +21,7 @@ describe('useCrudList', () => {
     });
 
     it('should initialize with default items', async () => {
-        const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
+        const itemsAPI = renderHook(() => useItems('filledList'), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         await items.waitFor(() => items.result.current.isSuccess);
         expect(items.result.current.data).toEqual(defaultItemsWithTypenames);

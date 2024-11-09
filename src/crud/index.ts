@@ -8,7 +8,7 @@ export const useCrudQuery =
             queryKey: props.key,
             queryFn: async () => {
                 const item = await props.fetch();
-                return { ...item, __typename: props.typename };
+                return item ? { ...item, __typename: props.typename } : undefined;
             },
         });
 
