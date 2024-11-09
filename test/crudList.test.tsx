@@ -36,9 +36,7 @@ describe('useCrudList', () => {
 
         await itemsAPI.result.current.create.mutateAsync({ name: 'Charlie' });
         await itemsAPI.waitFor(() => itemsAPI.result.current.create.isSuccess);
-
-        console.log('----');
-        console.log(items.result.current.data);
+        items.rerender();
 
         expect(items.result.current.data).toEqual([
             ...defaultItemsWithTypenames,
