@@ -26,7 +26,7 @@ export const useItems = (testId: string) => {
         run: (props: { id: number }) => api.delete(props),
         update: onDelete,
     });
-    const list = useCrudListQuery<number, TestItem>({ key, read: () => api.list(), typename });
+    const read = useCrudListQuery<number, TestItem>({ key, fetch: () => api.list(), typename });
     const update = useNormalizedMutation({
         run: (props: { id: number; name: string }) => api.update(props),
         typename,
@@ -35,7 +35,7 @@ export const useItems = (testId: string) => {
     return {
         create,
         delete: deleteMethod,
-        list,
+        read,
         update,
     };
 };

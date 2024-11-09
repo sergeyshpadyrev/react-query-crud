@@ -7,7 +7,7 @@ export const useCrudListQuery =
         useQuery({
             queryKey: props.key,
             queryFn: async () => {
-                const items = await props.read();
+                const items = await props.fetch();
                 return items.map((item) => ({ ...item, __typename: props.typename }));
             },
         });

@@ -1,6 +1,6 @@
 export interface CrudListQueryProps<Id, Item extends { id: Id }> {
     key: ReadonlyArray<any>;
-    read: () => Promise<Item[]>;
+    fetch: () => Promise<Item[]>;
     typename: string;
 }
 

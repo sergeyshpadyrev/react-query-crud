@@ -16,20 +16,20 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('useCrudList', () => {
     it('should initialize with undefined', () => {
         const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
-        const items = renderHook(() => itemsAPI.result.current.list(), { wrapper });
+        const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         expect(items.result.current.data).toEqual(undefined);
     });
 
     it('should initialize with default items', async () => {
         const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
-        const items = renderHook(() => itemsAPI.result.current.list(), { wrapper });
+        const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         await items.waitFor(() => items.result.current.isSuccess);
         expect(items.result.current.data).toEqual(defaultItemsWithTypenames);
     });
 
     it('should add items on create', async () => {
         const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
-        const items = renderHook(() => itemsAPI.result.current.list(), { wrapper });
+        const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         await items.waitFor(() => items.result.current.isSuccess);
 
         await itemsAPI.result.current.create.mutateAsync({ name: 'Charlie' });
@@ -44,7 +44,7 @@ describe('useCrudList', () => {
 
     it('should remove items on delete', async () => {
         const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
-        const items = renderHook(() => itemsAPI.result.current.list(), { wrapper });
+        const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         await items.waitFor(() => items.result.current.isSuccess);
 
         await itemsAPI.result.current.delete.mutateAsync({ id: 2 });
@@ -56,7 +56,7 @@ describe('useCrudList', () => {
 
     it('should change items on update', async () => {
         const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
-        const items = renderHook(() => itemsAPI.result.current.list(), { wrapper });
+        const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         await items.waitFor(() => items.result.current.isSuccess);
 
         await itemsAPI.result.current.update.mutateAsync({ id: 2, name: 'Charlie' });
