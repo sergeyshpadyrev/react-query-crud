@@ -1,7 +1,7 @@
 import { defaultItems } from './crudList/api';
 import { describe, it, expect } from '@jest/globals';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { QueryNormalizerProvider } from '@normy/react-query';
+import { QueryClient } from '@tanstack/react-query';
+import { QueryCrudClientProvider } from '../src';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { useItems } from './crudList/hook';
@@ -10,9 +10,7 @@ const defaultItemsWithTypenames = defaultItems.map((item) => ({ ...item, __typen
 
 const queryClient = new QueryClient();
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryNormalizerProvider queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </QueryNormalizerProvider>
+    <QueryCrudClientProvider client={queryClient}>{children}</QueryCrudClientProvider>
 );
 
 describe('useCrudList', () => {
