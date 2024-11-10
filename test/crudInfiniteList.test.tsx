@@ -49,4 +49,42 @@ describe('useCrudList', () => {
             pageParams: [0, 1],
         });
     });
+
+    it('should remove items on delete', async () => {
+        const itemsAPI = renderHook(() => useItems('deleteList', limit), { wrapper });
+        const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
+        await items.waitFor(() => items.result.current.isSuccess);
+
+        await itemsAPI.result.current.delete.mutateAsync({ id: 1 });
+        await itemsAPI.waitFor(() => itemsAPI.result.current.delete.isSuccess);
+        items.rerender();
+
+        expect(items.result.current.data).toEqual({
+            pages: [{ canFetchMore: true, items: defaultItemsWithTypenames.slice(1, limit) }],
+            pageParams: [0],
+        });
+    });
+
+    it('should change items on update', async () => {
+        const itemsAPI = renderHook(() => useItems('deleteList', limit), { wrapper });
+        const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
+        await items.waitFor(() => items.result.current.isSuccess);
+
+        await itemsAPI.result.current.update.mutateAsync({ id: 1, name: 'Xena' });
+        await itemsAPI.waitFor(() => itemsAPI.result.current.update.isSuccess);
+        items.rerender();
+
+        expect(items.result.current.data).toEqual({
+            pages: [
+                {
+                    canFetchMore: true,
+                    items: [
+                        { ...defaultItemsWithTypenames[0], name: 'Xena' },
+                        ...defaultItemsWithTypenames.slice(1, limit),
+                    ],
+                },
+            ],
+            pageParams: [0],
+        });
+    });
 });

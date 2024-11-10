@@ -38,9 +38,9 @@ export const createMockAPI = () => {
                 canFetchMore: items.length > offset + limit,
                 items: items.slice(offset, offset + limit),
             }),
-        update: ({ id, data }: { id: number; data: { name: string } }): Promise<TestItem> =>
+        update: ({ id, name }: { id: number; name: string }): Promise<TestItem> =>
             new Promise((resolve) => {
-                items = items.map((item) => (item.id === id ? { ...item, ...data } : item));
+                items = items.map((item) => (item.id === id ? { ...item, name } : item));
                 resolve(items.find((item) => item.id === id)!);
             }),
     };

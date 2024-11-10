@@ -30,12 +30,36 @@ export const useItems = (testId: string, limit: number) => {
         },
     });
 
+    const onDelete = useCrudInfiniteListUpdater<
+        number,
+        TestItem,
+        { id: number },
+        void,
+        { canFetchMore: boolean; items: TestItem[] },
+        number
+    >({
+        key,
+        update: (data, _result, variables) => {
+            const pageIndex = data.pages.findIndex((page) => page.items.some((item) => item.id === variables.id));
+            return {
+                pages: data.pages.map((page) => ({
+                    ...page,
+                    items: page.items.filter((item) => item.id !== variables.id),
+                })),
+                pageParams: data.pageParams.map((param, index) => (index > pageIndex ? param - 1 : param)),
+            };
+        },
+    });
+
     const create = useNormalizedMutation<number, TestItem, { name: string }>({
         run: (variables) => api.create(variables),
         update: onCreate,
         typename,
     });
-
+    const del = useNonNormalizedMutation({
+        run: (variables) => api.delete(variables),
+        update: onDelete,
+    });
     const read = useCrudInfiniteListQuery<number, TestItem, { canFetchMore: boolean; items: TestItem[] }, number>({
         getNextPageParam: (lastPage, pages) => pages.flatMap((page) => page.items).length,
         initialPageParam: 0,
@@ -43,9 +67,15 @@ export const useItems = (testId: string, limit: number) => {
         fetch: (pageParam) => api.list(pageParam, limit),
         typename,
     });
+    const update = useNormalizedMutation({
+        run: (props: { id: number; name: string }) => api.update(props),
+        typename,
+    });
 
     return {
         create,
+        delete: del,
         read,
+        update,
     };
 };
