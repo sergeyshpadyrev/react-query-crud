@@ -1,3 +1,6 @@
+![workflow](https://github.com/sergeyshpadyrev/react-query-crud/actions/workflows/main.yml/badge.svg)
+[![npm version](https://badge.fury.io/js/react-query-crud.svg)](https://badge.fury.io/js/react-query-crud)
+
 # React query CRUD
 
 This library is built on top of two libraries:
