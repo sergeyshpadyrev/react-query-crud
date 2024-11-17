@@ -32,8 +32,8 @@ describe('useCrud', () => {
         const item = renderHook(() => itemAPI.result.current.read(), { wrapper });
         await item.waitFor(() => item.result.current.isSuccess);
 
-        await itemAPI.result.current.update.mutateAsync({ id: 1, name: 'Bob' });
-        await itemAPI.waitFor(() => itemAPI.result.current.update.isSuccess);
+        await itemAPI.result.current.update({ id: 1, name: 'Bob' });
+        await itemAPI.waitFor(() => itemAPI.result.current.update.mutation.isSuccess);
         item.rerender();
 
         expect(item.result.current.data).toEqual({ __typename: 'item', id: 1, name: 'Bob' });
@@ -44,8 +44,8 @@ describe('useCrud', () => {
         const item = renderHook(() => itemAPI.result.current.read(), { wrapper });
         await item.waitFor(() => item.result.current.isSuccess);
 
-        await itemAPI.result.current.delete.mutateAsync(undefined);
-        await itemAPI.waitFor(() => itemAPI.result.current.delete.isSuccess);
+        await itemAPI.result.current.delete(undefined);
+        await itemAPI.waitFor(() => itemAPI.result.current.delete.mutation.isSuccess);
         item.rerender();
 
         expect(item.result.current.data).toBeNull();
@@ -56,8 +56,8 @@ describe('useCrud', () => {
         const item = renderHook(() => itemAPI.result.current.read(), { wrapper });
         await item.waitFor(() => item.result.current.isSuccess);
 
-        await itemAPI.result.current.create.mutateAsync({ name: 'Bob' });
-        await itemAPI.waitFor(() => itemAPI.result.current.create.isSuccess);
+        await itemAPI.result.current.create({ name: 'Bob' });
+        await itemAPI.waitFor(() => itemAPI.result.current.create.mutation.isSuccess);
         item.rerender();
 
         expect(item.result.current.data).toEqual({ __typename: 'item', id: 2, name: 'Bob' });
