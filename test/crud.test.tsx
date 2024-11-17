@@ -44,7 +44,7 @@ describe('useCrud', () => {
         const item = renderHook(() => itemAPI.result.current.read(), { wrapper });
         await item.waitFor(() => item.result.current.query.isSuccess);
 
-        await itemAPI.result.current.delete(undefined);
+        await itemAPI.result.current.delete();
         await itemAPI.waitFor(() => itemAPI.result.current.delete.mutation.isSuccess);
         item.rerender();
 

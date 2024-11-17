@@ -1,6 +1,16 @@
 import { UseMutationResult } from '@tanstack/react-query';
 
-export type CrudMutation<Argument, Result> = ((argument: Argument) => Promise<Result>) & {
+export type IfUnknown<T, TrueType, FalseType> = unknown extends T
+    ? T extends unknown
+        ? TrueType
+        : FalseType
+    : FalseType;
+
+export type CrudMutation<Argument, Result> = IfUnknown<
+    Argument,
+    () => Promise<Result>,
+    (argument: Argument) => Promise<Result>
+> & {
     mutation: UseMutationResult<Result, Error, Argument, unknown>;
 };
 

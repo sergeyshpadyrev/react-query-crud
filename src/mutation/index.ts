@@ -8,7 +8,7 @@ export const useNonNormalizedMutation = <Argument, Result>(props: NonNormalizedM
     });
     const func = (argument: Argument) => mutation.mutateAsync(argument);
     func.mutation = mutation;
-    return func as CrudMutation<Argument, Result>;
+    return func as unknown as CrudMutation<Argument, Result>;
 };
 
 export const useNormalizedMutation = <Id, Item extends { id: Id }, Argument>(
@@ -23,5 +23,5 @@ export const useNormalizedMutation = <Id, Item extends { id: Id }, Argument>(
     });
     const func = (argument: Argument) => mutation.mutateAsync(argument);
     func.mutation = mutation;
-    return func as CrudMutation<Argument, Item & { __typename: string }>;
+    return func as unknown as CrudMutation<Argument, Item & { __typename: string }>;
 };

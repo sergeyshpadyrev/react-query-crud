@@ -12,7 +12,7 @@ export const useItem = (testId: string) => {
         key,
         update: (_item, result) => result,
     });
-    const onDelete = useCrudUpdater<number, TestItem, undefined, void>({
+    const onDelete = useCrudUpdater<number, TestItem, unknown, void>({
         key,
         update: () => null,
     });
