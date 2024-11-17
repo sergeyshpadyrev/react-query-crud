@@ -80,7 +80,7 @@ export const useItems = () => {
         update: onCreate,
         typename,
     });
-    const deleteMethod = useNonNormalizedMutation({
+    const del = useNonNormalizedMutation({
         run: (props: { id: number }) => api.delete(props),
         update: onDelete,
     });
@@ -92,7 +92,7 @@ export const useItems = () => {
 
     return {
         create,
-        delete: deleteMethod,
+        delete: del,
         read,
         update,
     };
@@ -104,18 +104,19 @@ Then you can use it in your component:
 ```tsx
 import { useCallback } from 'react';
 const Comp = () => {
-    const items = useItems();
+    const itemsAPI = useItems();
+    const items = itemsAPI.read();
 
-    const onClickCreate = useCallback(() => items.create({ name: 'New item' }), [items.create]);
-    const onClickDelete = useCallback((id: string) => items.delete({ id }), [items.delete]);
+    const onClickCreate = useCallback(() => itemsAPI.create({ name: 'New item' }), [items.create]);
+    const onClickDelete = useCallback((id: string) => itemsAPI.delete({ id }), [items.delete]);
     const onClickUpdate = useCallback(
-        (id: string, newName: string) => items.update({ id, name: newName }),
+        (id: string, newName: string) => itemsAPI.update({ id, name: newName }),
         [items.update],
     );
 
     return (
         <div>
-            {items.list.map((item) => (
+            {items.value.map((item) => (
                 <div key={item.id}>
                     {item.name}
                     <button onClick={() => onClickUpdate(item.id, 'New name')}>Update</button>
@@ -130,17 +131,28 @@ const Comp = () => {
 
 ## Documentation
 
+### Query
+
 You have three types of CRUD entities:
 
 -   `useCrudQuery`
 -   `useCrudInfiniteListQuery`
 -   `useCrudListQuery`
 
+Each of them return an object with fields:
+
+-   `query` - react-query object
+-   `value` - flattened value
+
+### Query updater
+
 For each type you have a corresponding updater that can be passed to mutations:
 
 -   `useCrudUpdater`
 -   `useCrudListUpdater`
 -   `useCrudInfiniteListUpdater`
+
+### Mutation
 
 There are also two types of mutations:
 
