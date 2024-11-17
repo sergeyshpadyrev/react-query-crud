@@ -3,14 +3,16 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useCrudQuery =
     <Id, Item extends { id: Id }>(props: CrudQueryProps<Id, Item>) =>
-    () =>
-        useQuery({
+    () => {
+        const query = useQuery({
             queryKey: props.key,
             queryFn: async () => {
                 const item = await props.fetch();
                 return item ? { ...item, __typename: props.typename } : undefined;
             },
         });
+        return { query, value: query.data };
+    };
 
 export const useCrudUpdater = <Id, Item extends { id: Id }, Argument, Result>(
     props: CrudUpdaterProps<Id, Item, Argument, Result>,

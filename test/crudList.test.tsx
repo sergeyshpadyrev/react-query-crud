@@ -17,26 +17,29 @@ describe('useCrudList', () => {
     it('should initialize with undefined', () => {
         const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
-        expect(items.result.current.data).toEqual(undefined);
+
+        expect(items.result.current.query.data).toEqual(undefined);
+        expect(items.result.current.value).toEqual([]);
     });
 
     it('should initialize with default items', async () => {
         const itemsAPI = renderHook(() => useItems('filledList'), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
-        await items.waitFor(() => items.result.current.isSuccess);
-        expect(items.result.current.data).toEqual(defaultItemsWithTypenames);
+        await items.waitFor(() => items.result.current.query.isSuccess);
+
+        expect(items.result.current.query.data).toEqual(defaultItemsWithTypenames);
     });
 
     it('should add items on create', async () => {
         const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
-        await items.waitFor(() => items.result.current.isSuccess);
+        await items.waitFor(() => items.result.current.query.isSuccess);
 
         await itemsAPI.result.current.create({ name: 'Charlie' });
         await itemsAPI.waitFor(() => itemsAPI.result.current.create.mutation.isSuccess);
         items.rerender();
 
-        expect(items.result.current.data).toEqual([
+        expect(items.result.current.query.data).toEqual([
             ...defaultItemsWithTypenames,
             { __typename: 'item', id: 3, name: 'Charlie' },
         ]);
@@ -45,25 +48,25 @@ describe('useCrudList', () => {
     it('should remove items on delete', async () => {
         const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
-        await items.waitFor(() => items.result.current.isSuccess);
+        await items.waitFor(() => items.result.current.query.isSuccess);
 
         await itemsAPI.result.current.delete({ id: 2 });
         await itemsAPI.waitFor(() => itemsAPI.result.current.delete.mutation.isSuccess);
         items.rerender();
 
-        expect(items.result.current.data).toEqual([defaultItemsWithTypenames[0]]);
+        expect(items.result.current.query.data).toEqual([defaultItemsWithTypenames[0]]);
     });
 
     it('should change items on update', async () => {
         const itemsAPI = renderHook(() => useItems('emptyList'), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
-        await items.waitFor(() => items.result.current.isSuccess);
+        await items.waitFor(() => items.result.current.query.isSuccess);
 
         await itemsAPI.result.current.update({ id: 2, name: 'Charlie' });
         await itemsAPI.waitFor(() => itemsAPI.result.current.update.mutation.isSuccess);
         items.rerender();
 
-        expect(items.result.current.data).toEqual([
+        expect(items.result.current.query.data).toEqual([
             defaultItemsWithTypenames[0],
             { ...defaultItemsWithTypenames[1], name: 'Charlie' },
         ]);
