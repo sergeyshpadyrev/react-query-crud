@@ -33,10 +33,10 @@ export const useCrudInfiniteListUpdater = <
 ) => {
     const queryClient = useQueryClient();
     return (result: Result, variables: Argument) => {
-        const pages = queryClient.getQueryData<{ pages: Page[]; pageParams: PageParam[] }>(props.key);
-        if (!pages) return;
+        const data = queryClient.getQueryData<{ pages: Page[]; pageParams: PageParam[] }>(props.key);
+        if (!data) return;
 
-        const updatedPages = props.update(pages, result, variables);
-        queryClient.setQueryData(props.key, updatedPages);
+        const updatedData = props.update(data, result, variables);
+        queryClient.setQueryData(props.key, updatedData);
     };
 };

@@ -14,9 +14,9 @@ It's used for creating CRUD lists
 
 ```bash
 # npm
-npm install --save react-query-crud
+npm install --save @tanstack/react-query react-query-crud
 # yarn
-yarn add react-query-crud
+yarn add @tanstack/react-query react-query-crud
 ```
 
 ## Getting started
