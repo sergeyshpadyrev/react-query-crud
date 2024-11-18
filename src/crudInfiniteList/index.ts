@@ -8,7 +8,7 @@ export const useCrudInfiniteListQuery =
     ) =>
     () => {
         const query = useInfiniteQuery({
-            getNextPageParam: (lastPage: Page, pages: Page[]) => props.getNextPageParam(lastPage, pages),
+            getNextPageParam: (lastPage: Page | undefined, pages: Page[]) => props.getNextPageParam(lastPage, pages),
             initialPageParam: props.initialPageParam,
             queryKey: props.key,
             queryFn: async ({ pageParam }) => {

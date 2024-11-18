@@ -1,5 +1,5 @@
 export interface CrudInfiniteListQueryProps<Id, Item extends { id: Id }, Page extends { items: Item[] }, PageParam> {
-    getNextPageParam: (lastPage: Page, pages: Page[]) => PageParam | undefined;
+    getNextPageParam: (lastPage: Page | undefined, pages: Page[]) => PageParam | undefined;
     initialPageParam: PageParam;
     key: ReadonlyArray<any>;
     fetch: (pageParam: PageParam) => Promise<Page>;
