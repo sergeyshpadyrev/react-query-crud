@@ -1,6 +1,6 @@
 {
     "name": "react-query-crud",
-    "version": "0.6.8",
+    "version": "0.6.9",
     "license": "MIT",
     "author": "Sergey Shpadyrev",
     "keywords": [],
@@ -36,6 +36,6 @@
         "@tanstack/react-query": ">=5"
     },
     "dependencies": {
-        "@normy/react-query": "0.15.0"
+        "@normy/react-query": "^0.15.0"
     }
 }
