@@ -99,6 +99,19 @@ export const useItems = () => {
 };
 ```
 
+Or simply you can use `useCrudList` hook instead:
+
+```ts
+const itemsAPI = useCrudList<number, Item, { name: string }, { name: string }>({
+    create: (props: { name: string }) => api.create(props),
+    delete: (props: { id: number }) => api.delete(props),
+    key: ['items'],
+    read: () => api.list(),
+    typename: 'item',
+    update: (props: { id: number; name: string }) => api.update(props),
+});
+```
+
 Then you can use it in your component:
 
 ```tsx

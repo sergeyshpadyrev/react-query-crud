@@ -1,5 +1,11 @@
 import { createMockAPI, TestItem } from './api';
-import { useCrudListQuery, useCrudListUpdater, useNonNormalizedMutation, useNormalizedMutation } from '../../src';
+import {
+    useCrudList,
+    useCrudListQuery,
+    useCrudListUpdater,
+    useNonNormalizedMutation,
+    useNormalizedMutation,
+} from '../../src';
 import { useMemo } from 'react';
 
 export const useItems = (testId: string) => {
@@ -38,4 +44,21 @@ export const useItems = (testId: string) => {
         read,
         update,
     };
+};
+
+export const useItemsList = (testId: string) => {
+    const api = useMemo(createMockAPI, []);
+    const key = ['items', testId];
+    const typename = 'item';
+
+    const list = useCrudList({
+        create: api.create,
+        delete: api.delete,
+        key,
+        read: () => api.list(),
+        typename,
+        update: api.update,
+    });
+
+    return list;
 };
