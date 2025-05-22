@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { CrudInfiniteListProps, CrudInfiniteListQueryProps, CrudInfiniteListUpdaterProps } from './types';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { useCrudMutation } from '../mutation';
+import { useCrudMutation } from '../crudMutation';
 
 export const useCrudInfiniteListQuery =
     <Id, Item extends { id: Id }, Page extends { items: Item[] }, PageParam>(

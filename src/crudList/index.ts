@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { CrudListProps, CrudListQueryProps, CrudListUpdaterProps } from './types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCrudMutation } from '../mutation';
+import { useCrudMutation } from '../crudMutation';
 
 export const useCrudListQuery =
     <Id, Item extends { id: Id }>(props: CrudListQueryProps<Id, Item>) =>

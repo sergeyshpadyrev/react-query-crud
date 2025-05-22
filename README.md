@@ -90,35 +90,6 @@ const Component = () => {
 };
 ```
 
-## Documentation
-
-### Query
-
-You have three types of CRUD entities:
-
--   `useCrudQuery`
--   `useCrudInfiniteListQuery`
--   `useCrudListQuery`
-
-Each of them return an object with fields:
-
--   `query` - react-query object
--   `value` - flattened value
-
-### Query updater
-
-For each type you have a corresponding updater that can be passed to mutations:
-
--   `useCrudUpdater`
--   `useCrudListUpdater`
--   `useCrudInfiniteListUpdater`
-
-### Mutation
-
-There is only one type of mutation:
-
--   `useCrudMutation`
-
 ## Examples
 
 ### useCrudList
