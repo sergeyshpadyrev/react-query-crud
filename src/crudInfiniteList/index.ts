@@ -11,10 +11,7 @@ export const useCrudInfiniteListQuery =
             getNextPageParam: (lastPage: Page | undefined, pages: Page[]) => props.getNextPageParam(lastPage, pages),
             initialPageParam: props.initialPageParam,
             queryKey: props.key,
-            queryFn: async ({ pageParam }) => {
-                const page = await props.fetch(pageParam as PageParam);
-                return { ...page, items: page.items.map((item) => ({ ...item, __typename: props.typename })) };
-            },
+            queryFn: async ({ pageParam }) => props.fetch(pageParam as PageParam),
         });
         const value = useMemo(() => query.data?.pages?.flatMap((page) => page.items) ?? [], [query.data]);
 

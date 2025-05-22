@@ -1,17 +1,10 @@
 import { createMockAPI, TestItem } from './api';
-import {
-    useCrudInfiniteListQuery,
-    useCrudInfiniteListUpdater,
-    useNonNormalizedMutation,
-    useNormalizedMutation,
-} from '../../src';
+import { useCrudInfiniteListQuery, useCrudInfiniteListUpdater, useCrudMutation } from '../../src';
 import { useMemo } from 'react';
 
 export const useItems = (testId: string, limit: number) => {
     const api = useMemo(createMockAPI, []);
-
     const key = ['infinite-items', testId];
-    const typename = 'item';
 
     const onCreate = useCrudInfiniteListUpdater<
         number,
@@ -51,12 +44,32 @@ export const useItems = (testId: string, limit: number) => {
         },
     });
 
-    const create = useNormalizedMutation<number, TestItem, { name: string }>({
+    const onUpdate = useCrudInfiniteListUpdater<
+        number,
+        TestItem,
+        { id: number },
+        TestItem,
+        { canFetchMore: boolean; items: TestItem[] },
+        number
+    >({
+        key,
+        update: (data, result, variables) => {
+            const pageIndex = data.pages.findIndex((page) => page.items.some((item) => item.id === variables.id));
+            return {
+                pages: data.pages.map((page) => ({
+                    ...page,
+                    items: page.items.map((item) => (item.id === result.id ? result : item)),
+                })),
+                pageParams: data.pageParams,
+            };
+        },
+    });
+
+    const create = useCrudMutation<{ name: string }, TestItem>({
         run: (variables) => api.create(variables),
         update: onCreate,
-        typename,
     });
-    const del = useNonNormalizedMutation({
+    const del = useCrudMutation({
         run: (variables) => api.delete(variables),
         update: onDelete,
     });
@@ -65,11 +78,10 @@ export const useItems = (testId: string, limit: number) => {
         initialPageParam: 0,
         key,
         fetch: (pageParam) => api.list(pageParam, limit),
-        typename,
     });
-    const update = useNormalizedMutation({
+    const update = useCrudMutation({
         run: (props: { id: number; name: string }) => api.update(props),
-        typename,
+        update: onUpdate,
     });
 
     return {

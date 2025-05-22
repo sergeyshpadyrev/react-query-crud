@@ -1,16 +1,13 @@
 import { defaultItems } from './crudList/api';
 import { describe, it, expect } from '@jest/globals';
-import { QueryClient } from '@tanstack/react-query';
-import { QueryCrudClientProvider } from '../src';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { useItemsList } from './crudList/hook';
 
-const defaultItemsWithTypenames = defaultItems.map((item) => ({ ...item, __typename: 'item' }));
-
 const queryClient = new QueryClient();
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryCrudClientProvider client={queryClient}>{children}</QueryCrudClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
 describe('useCrudList wrapper', () => {
@@ -27,7 +24,7 @@ describe('useCrudList wrapper', () => {
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         await items.waitFor(() => items.result.current.query.isSuccess);
 
-        expect(items.result.current.query.data).toEqual(defaultItemsWithTypenames);
+        expect(items.result.current.query.data).toEqual(defaultItems);
     });
 
     it('should add items on create', async () => {
@@ -39,10 +36,7 @@ describe('useCrudList wrapper', () => {
         await itemsAPI.waitFor(() => itemsAPI.result.current.create.mutation.isSuccess);
         items.rerender();
 
-        expect(items.result.current.query.data).toEqual([
-            ...defaultItemsWithTypenames,
-            { __typename: 'item', id: 3, name: 'Charlie' },
-        ]);
+        expect(items.result.current.query.data).toEqual([...defaultItems, { id: 3, name: 'Charlie' }]);
     });
 
     it('should remove items on delete', async () => {
@@ -54,7 +48,7 @@ describe('useCrudList wrapper', () => {
         await itemsAPI.waitFor(() => itemsAPI.result.current.delete.mutation.isSuccess);
         items.rerender();
 
-        expect(items.result.current.query.data).toEqual([defaultItemsWithTypenames[0]]);
+        expect(items.result.current.query.data).toEqual([defaultItems[0]]);
     });
 
     it('should change items on update', async () => {
@@ -66,9 +60,6 @@ describe('useCrudList wrapper', () => {
         await itemsAPI.waitFor(() => itemsAPI.result.current.update.mutation.isSuccess);
         items.rerender();
 
-        expect(items.result.current.query.data).toEqual([
-            defaultItemsWithTypenames[0],
-            { ...defaultItemsWithTypenames[1], name: 'Charlie' },
-        ]);
+        expect(items.result.current.query.data).toEqual([defaultItems[0], { ...defaultItems[1], name: 'Charlie' }]);
     });
 });

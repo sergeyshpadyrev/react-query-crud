@@ -6,10 +6,7 @@ export const useCrudQuery =
     () => {
         const query = useQuery({
             queryKey: props.key,
-            queryFn: async () => {
-                const item = await props.fetch();
-                return item ? { ...item, __typename: props.typename } : undefined;
-            },
+            queryFn: props.fetch,
         });
         return { query, value: query.data };
     };

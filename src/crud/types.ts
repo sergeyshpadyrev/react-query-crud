@@ -1,7 +1,6 @@
 export interface CrudQueryProps<Id, Item extends { id: Id }> {
     key: ReadonlyArray<any>;
     fetch: () => Promise<Item | null>;
-    typename: string;
 }
 
 export type CrudUpdaterProps<Id, Item extends { id: Id }, Argument, Result> = {

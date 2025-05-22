@@ -1,16 +1,13 @@
 import { defaultItem } from './crud/api';
 import { describe, it, expect } from '@jest/globals';
-import { QueryClient } from '@tanstack/react-query';
-import { QueryCrudClientProvider } from '../src';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { useItem } from './crud/hook';
 
-const defaultItemWithTypename = { __typename: 'item', ...defaultItem };
-
 const queryClient = new QueryClient();
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryCrudClientProvider client={queryClient}>{children}</QueryCrudClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
 describe('useCrud', () => {
@@ -24,7 +21,7 @@ describe('useCrud', () => {
         const itemAPI = renderHook(() => useItem('filled'), { wrapper });
         const item = renderHook(() => itemAPI.result.current.read(), { wrapper });
         await item.waitFor(() => item.result.current.query.isSuccess);
-        expect(item.result.current.value).toEqual(defaultItemWithTypename);
+        expect(item.result.current.value).toEqual(defaultItem);
     });
 
     it('should change item on update', async () => {
@@ -36,7 +33,7 @@ describe('useCrud', () => {
         await itemAPI.waitFor(() => itemAPI.result.current.update.mutation.isSuccess);
         item.rerender();
 
-        expect(item.result.current.value).toEqual({ __typename: 'item', id: 1, name: 'Bob' });
+        expect(item.result.current.value).toEqual({ id: 1, name: 'Bob' });
     });
 
     it('should remove item on delete', async () => {
@@ -60,6 +57,6 @@ describe('useCrud', () => {
         await itemAPI.waitFor(() => itemAPI.result.current.create.mutation.isSuccess);
         item.rerender();
 
-        expect(item.result.current.value).toEqual({ __typename: 'item', id: 2, name: 'Bob' });
+        expect(item.result.current.value).toEqual({ id: 2, name: 'Bob' });
     });
 });

@@ -1,17 +1,15 @@
 import { defaultItems } from './crudInfiniteList/api';
 import { describe, it, expect } from '@jest/globals';
-import { QueryClient } from '@tanstack/react-query';
-import { QueryCrudClientProvider } from '../src';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { useItems } from './crudInfiniteList/hook';
 
-const defaultItemsWithTypenames = defaultItems.map((item) => ({ ...item, __typename: 'item' }));
 const limit = 5;
 
 const queryClient = new QueryClient();
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryCrudClientProvider client={queryClient}>{children}</QueryCrudClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
 describe('useCrudList', () => {
@@ -29,10 +27,10 @@ describe('useCrudList', () => {
         await items.waitFor(() => items.result.current.query.isSuccess);
 
         expect(items.result.current.query.data).toEqual({
-            pages: [{ canFetchMore: true, items: defaultItemsWithTypenames.slice(0, limit) }],
+            pages: [{ canFetchMore: true, items: defaultItems.slice(0, limit) }],
             pageParams: [0],
         });
-        expect(items.result.current.value).toEqual(defaultItemsWithTypenames.slice(0, limit));
+        expect(items.result.current.value).toEqual(defaultItems.slice(0, limit));
     });
 
     it('should add items on create', async () => {
@@ -46,15 +44,12 @@ describe('useCrudList', () => {
 
         expect(items.result.current.query.data).toEqual({
             pages: [
-                { canFetchMore: true, items: [{ __typename: 'item', id: 11, name: 'Xena' }] },
-                { canFetchMore: true, items: defaultItemsWithTypenames.slice(0, limit) },
+                { canFetchMore: true, items: [{ id: 11, name: 'Xena' }] },
+                { canFetchMore: true, items: defaultItems.slice(0, limit) },
             ],
             pageParams: [0, 1],
         });
-        expect(items.result.current.value).toEqual([
-            { __typename: 'item', id: 11, name: 'Xena' },
-            ...defaultItemsWithTypenames.slice(0, limit),
-        ]);
+        expect(items.result.current.value).toEqual([{ id: 11, name: 'Xena' }, ...defaultItems.slice(0, limit)]);
     });
 
     it('should remove items on delete', async () => {
@@ -67,10 +62,10 @@ describe('useCrudList', () => {
         items.rerender();
 
         expect(items.result.current.query.data).toEqual({
-            pages: [{ canFetchMore: true, items: defaultItemsWithTypenames.slice(1, limit) }],
+            pages: [{ canFetchMore: true, items: defaultItems.slice(1, limit) }],
             pageParams: [0],
         });
-        expect(items.result.current.value).toEqual(defaultItemsWithTypenames.slice(1, limit));
+        expect(items.result.current.value).toEqual(defaultItems.slice(1, limit));
     });
 
     it('should change items on update', async () => {
@@ -86,17 +81,14 @@ describe('useCrudList', () => {
             pages: [
                 {
                     canFetchMore: true,
-                    items: [
-                        { ...defaultItemsWithTypenames[0], name: 'Xena' },
-                        ...defaultItemsWithTypenames.slice(1, limit),
-                    ],
+                    items: [{ ...defaultItems[0], name: 'Xena' }, ...defaultItems.slice(1, limit)],
                 },
             ],
             pageParams: [0],
         });
         expect(items.result.current.value).toEqual([
-            { ...defaultItemsWithTypenames[0], name: 'Xena' },
-            ...defaultItemsWithTypenames.slice(1, limit),
+            { ...defaultItems[0], name: 'Xena' },
+            ...defaultItems.slice(1, limit),
         ]);
     });
 });

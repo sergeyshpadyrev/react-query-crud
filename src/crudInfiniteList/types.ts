@@ -3,7 +3,6 @@ export interface CrudInfiniteListQueryProps<Id, Item extends { id: Id }, Page ex
     initialPageParam: PageParam;
     key: ReadonlyArray<any>;
     fetch: (pageParam: PageParam) => Promise<Page>;
-    typename: string;
 }
 
 export type CrudInfiniteListUpdaterProps<

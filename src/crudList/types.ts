@@ -1,7 +1,6 @@
 export interface CrudListQueryProps<Id, Item extends { id: Id }> {
     key: ReadonlyArray<any>;
     fetch: () => Promise<Item[]>;
-    typename: string;
 }
 
 export type CrudListUpdaterProps<Id, Item extends { id: Id }, Argument, Result> = {
@@ -11,7 +10,6 @@ export type CrudListUpdaterProps<Id, Item extends { id: Id }, Argument, Result> 
 
 export type CrudListProps<Id, Item extends { id: Id }, CreateProps, UpdateProps> = {
     key: ReadonlyArray<any>;
-    typename: string;
 
     create: (props: CreateProps) => Promise<Item>;
     delete: (props: { id: Id }) => Promise<void>;
@@ -20,4 +18,5 @@ export type CrudListProps<Id, Item extends { id: Id }, CreateProps, UpdateProps>
 
     onCreate?: (items: Item[], createdItem: Item) => Item[];
     onDelete?: (items: Item[], deletedItemId: Id) => Item[];
+    onUpdate?: (items: Item[], updatedItem: Item) => Item[];
 };

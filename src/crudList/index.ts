@@ -1,17 +1,14 @@
 import { useMemo } from 'react';
 import { CrudListProps, CrudListQueryProps, CrudListUpdaterProps } from './types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNonNormalizedMutation, useNormalizedMutation } from '../mutation';
+import { useCrudMutation } from '../mutation';
 
 export const useCrudListQuery =
     <Id, Item extends { id: Id }>(props: CrudListQueryProps<Id, Item>) =>
     () => {
         const query = useQuery({
             queryKey: props.key,
-            queryFn: async () => {
-                const items = await props.fetch();
-                return items.map((item) => ({ ...item, __typename: props.typename }));
-            },
+            queryFn: props.fetch,
         });
         const value = useMemo(() => query.data ?? [], [query.data]);
 
@@ -43,20 +40,24 @@ export const useCrudList = <Id, Item extends { id: Id }, CreateProps, UpdateProp
         update: (items, _result, params) =>
             props.onDelete?.(items, params.id) ?? items.filter((item) => item.id !== params.id),
     });
+    const onUpdate = useCrudListUpdater<Id, Item, { id: Id }, Item>({
+        key: props.key,
+        update: (items, result) =>
+            props.onUpdate?.(items, result) ?? items.map((item) => (item.id === result.id ? result : item)),
+    });
 
-    const create = useNormalizedMutation({
+    const create = useCrudMutation({
         run: props.create,
         update: onCreate,
-        typename: props.typename,
     });
-    const del = useNonNormalizedMutation({
+    const del = useCrudMutation({
         run: props.delete,
         update: onDelete,
     });
-    const read = useCrudListQuery<Id, Item>({ key: props.key, fetch: () => props.read(), typename: props.typename });
-    const update = useNormalizedMutation<Id, Item, UpdateProps & { id: Id }>({
+    const read = useCrudListQuery<Id, Item>({ key: props.key, fetch: () => props.read() });
+    const update = useCrudMutation({
         run: (params: UpdateProps & { id: Id }) => props.update(params),
-        typename: props.typename,
+        update: onUpdate,
     });
 
     return {
