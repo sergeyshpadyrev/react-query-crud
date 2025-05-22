@@ -48,6 +48,8 @@ export default {
 You can create a crud list from it:
 
 ```ts
+import { useCrudList } from 'react-query-crud';
+
 const itemsAPI = useCrudList<number, Item, { name: string }, { name: string }>({
     create: (props: { name: string }) => api.create(props),
     delete: (props: { id: number }) => api.delete(props),
@@ -81,7 +83,7 @@ const Component = () => {
                     <button onClick={() => onClickUpdate(item.id, 'New name')}>Update</button>
                     <button onClick={() => onClickDelete(item.id)}>Delete</button>
                 </div>
-            )}
+            ))}
             <button onClick={onClickCreate}>Create</button>
         </div>
     );
@@ -116,3 +118,88 @@ For each type you have a corresponding updater that can be passed to mutations:
 There is only one type of mutation:
 
 -   `useCrudMutation`
+
+## Examples
+
+### useCrudList
+
+If you have API like this:
+
+```ts
+export interface ItemsAPI  {
+    create: (item: { name: string }): Promise<Item>;
+    delete: ({ id }: { id: number }): Promise<void>;
+    list: (): Promise<Item[]>;
+    update: ({ id, name }: { id: number; name: string }): Promise<Item>;
+};
+```
+
+Then you can create a crud list:
+
+```ts
+import { useCrudList } from 'react-query-crud';
+
+useCrudList<number, Item, { name: string }, { name: string }>({
+    key: ['items'],
+
+    create: (props: { name: string }) => api.create(props),
+    delete: (props: { id: number }) => api.delete(props),
+    read: () => api.list(),
+    update: (props: { id: number; name: string }) => api.update(props),
+});
+```
+
+### useCrudInfiniteList
+
+If you have API like this:
+
+```ts
+export interface ItemsAPI {
+    create: (item: { name: string }) => Promise<TestItem>;
+    delete: ({ id }: { id: number }) => Promise<void>;
+    list: (offset: number) => Promise<{ canFetchMore: boolean; items: TestItem[] }>;
+    update: ({ id, name }: { id: number; name: string }) => Promise<TestItem>;
+}
+```
+
+Then you can create a crud infinite list:
+
+```ts
+import { useCrudInfiniteList } from 'react-query-crud';
+
+useCrudInfiniteList<number, Item, { name: string }, { name: string }, { canFetchMore: boolean; items: Item[] }, number>(
+    {
+        key: ['items'],
+
+        defaultPageParam: 0,
+        nextPageParam: (pages) => pages.flatMap((page) => page.items).length,
+
+        create: (props: { name: string }) => api.create(props),
+        delete: (props: { id: number }) => api.delete(props),
+        read: (pageParam: number) => api.list(pageParam),
+        update: (props: { id: number; name: string }) => api.update(props),
+
+        onCreate: (data, result) => ({
+            pages: [{ canFetchMore: true, items: [result] }, ...data.pages],
+            pageParams: [0, ...data.pageParams.map((param) => param + 1)],
+        }),
+        onDelete: (data, deletedItemId) => {
+            const pageIndex = data.pages.findIndex((page) => page.items.some((item) => item.id === deletedItemId));
+            return {
+                pages: data.pages.map((page) => ({
+                    ...page,
+                    items: page.items.filter((item) => item.id !== deletedItemId),
+                })),
+                pageParams: data.pageParams.map((param, index) => (index > pageIndex ? param - 1 : param)),
+            };
+        },
+        onUpdate: (data, result) => ({
+            pages: data.pages.map((page) => ({
+                ...page,
+                items: page.items.map((item) => (item.id === result.id ? result : item)),
+            })),
+            pageParams: data.pageParams,
+        }),
+    },
+);
+```

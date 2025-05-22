@@ -101,12 +101,13 @@ export const useItemsInfiniteList = (testId: string, limit: number) => {
         { canFetchMore: boolean; items: TestItem[] },
         number
     >({
+        key,
+
         defaultPageParam: 0,
         nextPageParam: (pages) => pages.flatMap((page) => page.items).length,
 
         create: api.create,
         delete: api.delete,
-        key,
         read: (pageParam) => api.list(pageParam, limit),
         update: api.update,
 
