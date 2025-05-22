@@ -3,12 +3,7 @@
 
 # React query CRUD
 
-This library is built on top of two libraries:
-
--   [react-query](https://github.com/TanStack/query)
--   [normy](https://github.com/klis87/normy)
-
-It's used for creating CRUD lists
+This library is built on top of `@tanstack/query` and it's used for creating CRUD lists
 
 ## Installation
 
@@ -21,15 +16,14 @@ yarn add @tanstack/react-query react-query-crud
 
 ## Getting started
 
-First you should wrap your app with `QueryCrudClientProvider`
+First you should wrap your app with `QueryClientProvider`
 
 ```ts
-import { QueryClient } from '@tanstack/react-query';
-import { QueryCrudClientProvider } from 'react-query-crud';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
 
-const App = () => <QueryCrudClientProvider client={queryClient}>{/* your app */}</QueryCrudClientProvider>;
+const App = () => <QueryClientProvider client={queryClient}>{/* your app */}</QueryClientProvider>;
 ```
 
 Let's say you have an API like this:
@@ -51,55 +45,7 @@ export default {
 };
 ```
 
-Then you need to create a hook that will incapsulate all the logic for specific CRUD list:
-
-```ts
-import api from './api';
-import {
-    useCrudListQuery,
-    useCrudListUpdater,
-    useNonNormalizedMutation,
-    useNormalizedMutation,
-} from 'react-query-crud';
-
-export const useItems = () => {
-    const key = ['items'];
-    const typename = 'item';
-
-    const onCreate = useCrudListUpdater<number, Item, { name: string }, Item>({
-        key,
-        update: (items, result) => [...items, result],
-    });
-    const onDelete = useCrudListUpdater<number, Item, { id: number }, void>({
-        key,
-        update: (items, _result, props) => items.filter((item) => item.id !== props.id),
-    });
-
-    const create = useNormalizedMutation({
-        run: (props: { name: string }) => api.create(props),
-        update: onCreate,
-        typename,
-    });
-    const del = useNonNormalizedMutation({
-        run: (props: { id: number }) => api.delete(props),
-        update: onDelete,
-    });
-    const read = useCrudListQuery<number, Item>({ key, fetch: () => api.list(), typename });
-    const update = useNormalizedMutation({
-        run: (props: { id: number; name: string }) => api.update(props),
-        typename,
-    });
-
-    return {
-        create,
-        delete: del,
-        read,
-        update,
-    };
-};
-```
-
-Or simply you can use `useCrudList` hook instead:
+You can create a crud list from it:
 
 ```ts
 const itemsAPI = useCrudList<number, Item, { name: string }, { name: string }>({
@@ -107,7 +53,6 @@ const itemsAPI = useCrudList<number, Item, { name: string }, { name: string }>({
     delete: (props: { id: number }) => api.delete(props),
     key: ['items'],
     read: () => api.list(),
-    typename: 'item',
     update: (props: { id: number; name: string }) => api.update(props),
 });
 ```
@@ -116,7 +61,8 @@ Then you can use it in your component:
 
 ```tsx
 import { useCallback } from 'react';
-const Comp = () => {
+
+const Component = () => {
     const itemsAPI = useItems();
     const items = itemsAPI.read();
 
@@ -135,7 +81,7 @@ const Comp = () => {
                     <button onClick={() => onClickUpdate(item.id, 'New name')}>Update</button>
                     <button onClick={() => onClickDelete(item.id)}>Delete</button>
                 </div>
-            ))}
+            )}
             <button onClick={onClickCreate}>Create</button>
         </div>
     );
@@ -167,12 +113,6 @@ For each type you have a corresponding updater that can be passed to mutations:
 
 ### Mutation
 
-There are also two types of mutations:
+There is only one type of mutation:
 
--   `useNormalizedMutation`
--   `useNonNormalizedMutation`
-
-Normalized mutation should always return the type of the entity, while non-normalized mutation can return anything.
-The entity returned by normalized mutation will be used to update the normalization object (in react-query cache).
-
-If you want to use normalization in objects inside nested arrays just add `__typename` field to each object.
+-   `useCrudMutation`
