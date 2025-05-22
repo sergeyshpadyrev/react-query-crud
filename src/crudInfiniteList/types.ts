@@ -20,3 +20,44 @@ export type CrudInfiniteListUpdaterProps<
         variables: Argument,
     ) => { pages: Page[]; pageParams: PageParam[] };
 };
+
+export type CrudInfiniteListProps<
+    Id,
+    Item extends { id: Id },
+    CreateProps,
+    UpdateProps,
+    Page extends { items: Item[] },
+    PageParam,
+> = {
+    key: ReadonlyArray<any>;
+
+    defaultPageParam: PageParam;
+    nextPageParam: (pages: Page[]) => PageParam | undefined;
+
+    create: (props: CreateProps) => Promise<Item>;
+    delete: (props: { id: Id }) => Promise<void>;
+    read: (pageParam: PageParam) => Promise<Page>;
+    update: (props: UpdateProps & { id: Id }) => Promise<Item>;
+
+    onCreate: (
+        data: {
+            pages: Page[];
+            pageParams: PageParam[];
+        },
+        createdItem: Item,
+    ) => { pages: Page[]; pageParams: PageParam[] };
+    onDelete: (
+        data: {
+            pages: Page[];
+            pageParams: PageParam[];
+        },
+        deletedItemId: Id,
+    ) => { pages: Page[]; pageParams: PageParam[] };
+    onUpdate: (
+        data: {
+            pages: Page[];
+            pageParams: PageParam[];
+        },
+        updatedItem: Item,
+    ) => { pages: Page[]; pageParams: PageParam[] };
+};

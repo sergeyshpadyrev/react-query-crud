@@ -3,7 +3,7 @@ import { describe, it, expect } from '@jest/globals';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
-import { useItems } from './crudInfiniteList/hook';
+import { useItemsInfiniteList } from './crudInfiniteList/hook';
 
 const limit = 5;
 
@@ -12,9 +12,9 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
-describe('useCrudInfiniteList', () => {
+describe('useCrudInfiniteList wrapper', () => {
     it('should initialize with undefined', () => {
-        const itemsAPI = renderHook(() => useItems('emptyInfiniteList', limit), { wrapper });
+        const itemsAPI = renderHook(() => useItemsInfiniteList('emptyInfiniteList', limit), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
 
         expect(items.result.current.query.data).toEqual(undefined);
@@ -22,7 +22,7 @@ describe('useCrudInfiniteList', () => {
     });
 
     it('should initialize with default items', async () => {
-        const itemsAPI = renderHook(() => useItems('filledInfiniteList', limit), { wrapper });
+        const itemsAPI = renderHook(() => useItemsInfiniteList('filledInfiniteList', limit), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         await items.waitFor(() => items.result.current.query.isSuccess);
 
@@ -34,7 +34,7 @@ describe('useCrudInfiniteList', () => {
     });
 
     it('should add items on create', async () => {
-        const itemsAPI = renderHook(() => useItems('filledInfiniteList', limit), { wrapper });
+        const itemsAPI = renderHook(() => useItemsInfiniteList('filledInfiniteList', limit), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         await items.waitFor(() => items.result.current.query.isSuccess);
 
@@ -53,7 +53,7 @@ describe('useCrudInfiniteList', () => {
     });
 
     it('should remove items on delete', async () => {
-        const itemsAPI = renderHook(() => useItems('deleteList', limit), { wrapper });
+        const itemsAPI = renderHook(() => useItemsInfiniteList('deleteList', limit), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         await items.waitFor(() => items.result.current.query.isSuccess);
 
@@ -69,7 +69,7 @@ describe('useCrudInfiniteList', () => {
     });
 
     it('should change items on update', async () => {
-        const itemsAPI = renderHook(() => useItems('deleteList', limit), { wrapper });
+        const itemsAPI = renderHook(() => useItemsInfiniteList('deleteList', limit), { wrapper });
         const items = renderHook(() => itemsAPI.result.current.read(), { wrapper });
         await items.waitFor(() => items.result.current.query.isSuccess);
 
